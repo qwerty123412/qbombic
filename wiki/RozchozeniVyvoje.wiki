@@ -1,0 +1,12 @@
+#Jak rozjet vyvoj projektu
+
+= Instalace =
+   * repozitar ubuntu
+      * QtCreator, QtDesigner
+      * valgrind
+      * libqjson0, libqjson-dev
+
+Debug serveru se mi povedlo rozchodit az po nasledujicim postupu (mozna neni potreba):
+1) Nastoje->Volby Terminál nastavit na "xterm -e", pak to jde aspon pustit 
+2) sudo gedit /etc/sysctl.d/10-ptrace.conf
+3) kernel.yama.ptrace_scope = 0 (puvodne tam byla 1)
