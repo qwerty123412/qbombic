@@ -1,0 +1,12 @@
+#ifndef GAMESHARED_GLOBAL_H
+#define GAMESHARED_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(GAMESHARED_LIBRARY)
+#  define GAMESHAREDSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define GAMESHAREDSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // GAMESHARED_GLOBAL_H
