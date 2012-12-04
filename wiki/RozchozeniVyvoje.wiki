@@ -9,4 +9,9 @@
 Debug serveru se mi povedlo rozchodit az po nasledujicim postupu (mozna neni potreba):
 1) Nastoje->Volby Terminál nastavit na "xterm -e", pak to jde aspon pustit 
 2) sudo gedit /etc/sysctl.d/10-ptrace.conf
-3) kernel.yama.ptrace_scope = 0 (puvodne tam byla 1)
+3) kernel.yama.ptrace_scope = 0 (posledni radek, puvodne tam byla 1)
+
+Nastavení projektu:
+Pokud chceme zalozit projekt musi byt nejdriv zalozen s podadresari a potom ostatni jako dilci projekty, pak jdou knihovny linkovat pres menu (pridat knihovnu->vnitrni knihovnu)
+Pro kompilaci c++11 do souboru .pro dame:
+QMAKE_CXXFLAGS += -std=c++11
