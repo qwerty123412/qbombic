@@ -1,3 +1,8 @@
+= Externi Knihovny =
+== QJson ==
+Naprosto esencialni je precist si:
+http://qjson.sourceforge.net/usage/ Jako doporuceny zpusob vyvoje je vytvaret v GameShared tridy a ty pak ObjectHelperem prevadet do QVariant a ten pouzit v knihovne komunikace.
+
 = ProtocolLib =
 Hlavni objekt teto knihovny je QJsonCommunication. Existuji dva zpusoby pouziti: Requesty a Notifikace
 === Request ===
