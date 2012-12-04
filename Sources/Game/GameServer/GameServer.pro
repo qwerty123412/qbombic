@@ -21,13 +21,13 @@ SOURCES += main.cpp \
     qplayer.cpp \
     qgameserver.cpp
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ProtocolLib/ProtocolLib/release/ -lProtocolLib
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ProtocolLib/ProtocolLib/debug/ -lProtocolLib
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ProtocolLib/release/ -lProtocolLib
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ProtocolLib/debug/ -lProtocolLib
 else:symbian: LIBS += -lProtocolLib
-else:unix: LIBS += -L$$OUT_PWD/../../ProtocolLib/ProtocolLib/ -lProtocolLib
+else:unix: LIBS += -L$$OUT_PWD/../ProtocolLib/ -lProtocolLib
 
-INCLUDEPATH += $$PWD/../../ProtocolLib/ProtocolLib
-DEPENDPATH += $$PWD/../../ProtocolLib/ProtocolLib
+INCLUDEPATH += $$PWD/../ProtocolLib
+DEPENDPATH += $$PWD/../ProtocolLib
 
 HEADERS += \
     qplayer.h \
