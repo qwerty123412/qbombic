@@ -45,7 +45,7 @@
 
 int main(int argc, char **argv)
 {
-    GameUIConstants::setBaseDir(QDir::currentPath() + "/GameUI");
+    GameUIConstants::setBaseDir(QDir::currentPath() + "/");
     Q_INIT_RESOURCE(portedasteroids);
 
     QApplication app(argc, argv);
