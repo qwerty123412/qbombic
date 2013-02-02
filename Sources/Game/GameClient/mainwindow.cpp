@@ -3,7 +3,7 @@
 #include "qplayerinfo.h"
 #include "qgameinfo.h"
 #include "RequestsResponses.h"
-#include "toplevel.h"
+#include "qgame.h"
 
 #include <QInputDialog>
 #include <QStandardItemModel>
@@ -75,16 +75,16 @@ void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
     {
         this->ui->textBrowserChat->append("![Game started]");
 
-        gameWindow = new KAstTopLevel(this);
-        connect(gameWindow, SIGNAL(close()), SLOT(gameWindowClosed));
-        gameWindow->show();
+        gameObject = new QGame(this);
+        connect(gameObject, SIGNAL(ended()), SLOT(gameEnded()));
+        gameObject->start();
     });
 }
 
-void MainWindow::gameWindowClosed()
+void MainWindow::gameEnded()
 {
-    delete gameWindow;
-    gameWindow = nullptr;
+    delete gameObject;
+    gameObject = nullptr;
 }
 
 void MainWindow::onSocketError(QJsonCommunication&, QAbstractSocket::SocketError)

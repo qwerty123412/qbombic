@@ -11,6 +11,7 @@
 
 #include "qjsoncommunication.h"
 #include "toplevel.h"
+#include "qgame.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,7 +35,7 @@ public slots:
     void exitClick();
     void startClick();
     void refreshPlayerList();
-    void gameWindowClosed();
+    void gameEnded();
 
     void createGame();
     
@@ -43,7 +44,7 @@ private:
     std::shared_ptr<QJsonCommunication> comm;
     bool exitApp;
     QString gameName;
-    KAstTopLevel* gameWindow;
+    QGame* gameObject;
 };
 
 #endif // MAINWINDOW_H
