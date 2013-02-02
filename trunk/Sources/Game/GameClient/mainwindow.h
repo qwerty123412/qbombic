@@ -10,6 +10,7 @@
 #include <QListView>
 
 #include "qjsoncommunication.h"
+#include "toplevel.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +32,9 @@ public slots:
     void onChatSend();
     void logoutClick();
     void exitClick();
+    void startClick();
     void refreshPlayerList();
+    void gameWindowClosed();
 
     void createGame();
     
@@ -39,6 +42,8 @@ private:
     Ui::MainWindow *ui;
     std::shared_ptr<QJsonCommunication> comm;
     bool exitApp;
+    QString gameName;
+    KAstTopLevel* gameWindow;
 };
 
 #endif // MAINWINDOW_H
