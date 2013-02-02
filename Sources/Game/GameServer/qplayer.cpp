@@ -11,6 +11,7 @@ QPlayer::QPlayer(QGameServer* server, QJsonCommunication *comm, const QString na
 {
     comm->registerNotification(Notifications::MESSAGE, std::bind(&QPlayer::onMessage, this, _1));
     comm->registerNotification(Notifications::QUIT_GAME, std::bind(&QPlayer::onGameLeave, this, _1));
+    comm->registerNotification(Notifications::GAME_STATE, std::bind(&QPlayer::onGameState, this, _1));
 
     comm->registerRequest(Request::GET_PLAYERS, std::bind(&QPlayer::onGetPlayerList, this, _1));
     comm->registerRequest(Request::CREATE_GAME, std::bind(&QPlayer::onGameCreate, this, _1));
@@ -118,6 +119,14 @@ void QPlayer::onGameLeave(const QVariant &)
 void QPlayer::onGameCommand(const QVariant &command)
 {
     game->command(this, extractQVariantItem(command, "command"));
+}
+
+void QPlayer::onGameState(const QVariant &state)
+{
+    if (game)
+    {
+        game->broadcastNotification(nullptr, Notifications::GAME_STATE, state);
+    }
 }
 
 /*

@@ -33,6 +33,17 @@ void QGame::writeInfo(QGameInfo &info) const
     info.setName(name);
 }
 
+void QGame::broadcastNotification(const QPlayer *except, const QString &notif, const QVariant &data)
+{
+    for(QPlayer* player : members)
+    {
+        if (player == except)
+            continue;
+
+        player->getComm()->sendNotification(notif, data);
+    }
+}
+
 bool QGame::join(QPlayer *player)
 {
     if (members.size() >= 6)

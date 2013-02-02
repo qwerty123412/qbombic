@@ -94,6 +94,9 @@ public:
     void showText( const QString &text, const QColor &color, bool scroll=TRUE );
     void hideText();
 
+    Character* getPlayer() const { return m_player; }
+    const QList<Character*>& getPlayers() const { return m_players; }
+
 signals:
     void shipKilled();
     void rockHit( int size );

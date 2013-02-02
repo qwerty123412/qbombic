@@ -17,3 +17,4 @@ const QString Notifications::GAME_LIST = "GAME_LIST";
 const QString Notifications::MESSAGE = "MESSAGE";
 const QString Notifications::QUIT_GAME = "QUIT_GAME";
 const QString Notifications::GAME_STARTED = "GAME_STARTED";
+const QString Notifications::GAME_STATE = "GAME_STATE";
