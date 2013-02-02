@@ -7,6 +7,7 @@ class GAMESHAREDSHARED_EXPORT GameShared
 {
 public:
     GameShared();
+    static void Init();
 };
 
 #endif // GAMESHARED_H

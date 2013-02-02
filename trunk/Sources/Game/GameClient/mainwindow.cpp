@@ -65,8 +65,7 @@ void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
         {
             QGameInfo info;
             QJson::QObjectHelper::qvariant2qobject(g.toMap(), &info);
-            QString label("%1: %2 (%3)");
-            label.arg(info.getCreator().getName()).arg(info.getName()).arg(info.getCount());
+            QString label = QString("%1: %2 (%3)").arg(info.getCreator()).arg(info.getName()).arg(info.getPlayers());
             model->appendRow(new QStandardItem(label));
         }
 
@@ -145,13 +144,14 @@ void MainWindow::createGame()
     }
     QVariantMap data;
     data.insert("name", name);
-    comm->sendRequest(Request::CREATE_GAME, data, [this,&name](const QString& resp, const QVariant& respData)
+    comm->sendRequest(Request::CREATE_GAME, data, [this](const QString& resp, const QVariant& respData)
     {
         if (resp != Response::OK)
         {
             this->ui->textBrowserChat->append("![Game was not created.]");
             return;
         }
-        this->ui->textBrowserChat->append("![Game " + name + " was created.]");
+
+        this->ui->textBrowserChat->append("![Game was created.]");
     });
 }

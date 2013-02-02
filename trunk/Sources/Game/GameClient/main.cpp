@@ -5,10 +5,12 @@
 #include "logindialog.h"
 #include "gameuiconstants.h"
 #include "toplevel.h"
+#include "gameshared.h"
 
 int main(int argc, char *argv[])
 {
     GameUIConstants::setBaseDir(QDir::currentPath() + "/../../GameUI");
+    GameShared::Init();
 
     QApplication a(argc, argv);
 

@@ -9,3 +9,9 @@ QPlayerInfo::QPlayerInfo(const QPlayerInfo& another) :
     QObject(another.parent()), name(another.name)
 {
 }
+
+QPlayerInfo::~QPlayerInfo()
+{
+
+}
+

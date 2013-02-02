@@ -56,12 +56,16 @@ void QPlayer::onGameCreate(std::shared_ptr<QJsonRequest> req)
         req->sendResponse(Response::FAILED);
         return;
     }
+
     QGame* g = server->createGame(this, extractQVariantItem(req, "name"));
     if (!g)
     {
         req->sendResponse(Response::FAILED);
         return;
     }
+
+    g->join(this);
+
     game = g;
     req->sendResponse(Response::OK);
 }
