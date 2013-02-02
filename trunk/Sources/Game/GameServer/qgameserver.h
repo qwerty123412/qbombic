@@ -12,6 +12,7 @@
 #include <qjson/qobjecthelper.h>
 
 #include "qplayer.h"
+#include "qgame.h"
 #include "qjsoncommunication.h"
 
 class QGameServer : public QObject
@@ -21,13 +22,19 @@ public:
     explicit QGameServer(QObject *parent = 0);
     virtual ~QGameServer();
 
-    void broadcastNotification(const QString& notif, const QVariant& data);
+    void broadcastNotification(const QString& notif, const QVariant& data = QVariant());
 
     void onLogin(std::shared_ptr<QJsonRequest> request);
-    void onGetPlayers(std::shared_ptr<QJsonRequest> request);
+//    void onGetPlayers(std::shared_ptr<QJsonRequest> request);
+    QList<QPlayer*> getPlayers() const { return players.values(); }
+
+    QGame* createGame(QPlayer* player, const QString& name);
+    QGame* getGame(const QString& name);
+    void closeGame(QPlayer* player);
+
+    void gameListChanged();
 
 signals:
-    
 public slots:
 
     void onNewConnect();
@@ -36,8 +43,10 @@ public slots:
 private:
     void cleanGarbageComms();
 
+
     QSet<QJsonCommunication*> communications;
     QMap<QJsonCommunication*, QPlayer*> players;
+    QMap<QString, QGame*> games;
     QTcpServer tcp_server;
     QSet<QJsonCommunication*> garbageComms;
 

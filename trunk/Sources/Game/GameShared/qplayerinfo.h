@@ -11,9 +11,17 @@ class QPlayerInfo : public QObject
 
 public:
     explicit QPlayerInfo(QObject *parent = 0);
+    QPlayerInfo(const QPlayerInfo& another);
     
-    QString getName() const { return name; }
+    const QString& getName() const { return name; }
     void setName(const QString& value) { name = value; }
+
+    QPlayerInfo& operator=(const QPlayerInfo& another)
+    {
+        if(&another != this)
+            name = another.name;
+        return *this;
+    }
 
 signals:
     

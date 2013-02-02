@@ -10,6 +10,7 @@
 #include <qplayerinfo.h>
 
 class QGameServer;
+class QGame;
 
 class QPlayer : public QObject
 {
@@ -20,10 +21,21 @@ public:
 
     const QString& getName() { return name; }
     QJsonCommunication* getComm() { return comm; }
+    QGame* getGame() { return game; }
 
     void onMessage(const QVariant& messageData);
 
     void writeInfo(QPlayerInfo& info) const;
+
+    void onGetPlayerList(std::shared_ptr<QJsonRequest> req);
+
+    void onGameStart(const QVariant&);
+    void onGameCreate(std::shared_ptr<QJsonRequest> req);
+    void onGameJoin(std::shared_ptr<QJsonRequest> req);
+    void onGameLeave(const QVariant&);// just notification
+    void onGameCommand(const QVariant& command);//just notification
+
+    void gameQuit() { game = nullptr; }
 
 signals:
     
@@ -34,6 +46,7 @@ private:
     QGameServer* server;
     QJsonCommunication* comm;
     QString name;
+    QGame* game;
 };
 
 #endif // QPLAYER_H

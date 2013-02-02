@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "qplayerinfo.h"
+#include "qgameinfo.h"
 #include "RequestsResponses.h"
 
+#include <QInputDialog>
 #include <QStandardItemModel>
 #include <qjson/qobjecthelper.h>
 
@@ -11,12 +13,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow), comm(nullptr), exitApp(true)
 {
     ui->setupUi(this);
-    connect(ui->pushButtonSend, SIGNAL(clicked()), SLOT(onChatSend()));
     connect(ui->actionOdhlasit, SIGNAL(triggered()), SLOT(logoutClick()));
     connect(ui->actionUkoncit, SIGNAL(triggered()), SLOT(exitClick()));
-    connect(ui->pushButtonRefreshPlayers, SIGNAL(clicked()), SLOT(onPlayersClicked()));
+    connect(ui->pushButtonSend, SIGNAL(clicked()), SLOT(onChatSend()));
+    connect(ui->pushButtonRefreshPlayers, SIGNAL(clicked()), SLOT(refreshPlayerList()));
+    connect(ui->pushButtonNewGame, SIGNAL(clicked()), SLOT(createGame()));
 
     ui->listViewPlayers->setModel(new QStandardItemModel(ui->listViewPlayers));
+    ui->listViewGames->setModel(new QStandardItemModel(ui->listViewGames));
 }
 
 MainWindow::~MainWindow()
@@ -27,16 +31,49 @@ MainWindow::~MainWindow()
 void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
 {
     comm = value;
-    comm-> registerNotification(REQ_MESSAGE, [this](const QVariant& message)
+    comm-> registerNotification(Notifications::MESSAGE, [this](const QVariant& message)
     {
         QVariantMap data = message.toMap();
-            this->ui->textBrowserChat->append(data["from"].toString() + ": " + data["message"].toString());
+        this->ui->textBrowserChat->append(data["from"].toString() + ": " + data["message"].toString());
     });
 
     connect(comm.get(), SIGNAL(socketError(QJsonCommunication&, QAbstractSocket::SocketError)), SLOT(onSocketError(QJsonCommunication&,QAbstractSocket::SocketError)));
+    refreshPlayerList();
+    comm->registerNotification(Notifications::NEW_PLAYER, [this](const QVariant& message)
+    {
+        QPlayerInfo info;
+        QJson::QObjectHelper::qvariant2qobject(message.toMap(), &info);
+        QStandardItemModel* model = static_cast<QStandardItemModel*>(ui->listViewPlayers->model());
+        this->ui->textBrowserChat->append("![Player " + info.getName() + " has entered.]");
+        model->appendRow(new QStandardItem(info.getName()));
+        model->sort(0);
+    });
+    comm->registerNotification(Notifications::QUIT_PLAYER, [this](const QVariant& data)
+    {
+        QPlayerInfo info;
+        QJson::QObjectHelper::qvariant2qobject(data.toMap(), &info);
+
+        this->ui->textBrowserChat->append("![Player " + info.getName() + " has quit.]");
+        refreshPlayerList();
+    });
+    comm->registerNotification(Notifications::GAME_LIST, [this](const QVariant& data)
+    {
+        QStandardItemModel* model = static_cast<QStandardItemModel*>(this->ui->listViewGames->model());
+        model->clear();
+        QVariantList games = data.toList();
+        for (QVariant g : games)
+        {
+            QGameInfo info;
+            QJson::QObjectHelper::qvariant2qobject(g.toMap(), &info);
+            QString label("%1: %2 (%3)");
+            label.arg(info.getCreator().getName()).arg(info.getName()).arg(info.getCount());
+            model->appendRow(new QStandardItem(label));
+        }
+
+    });
 }
 
-void MainWindow::onSocketError(QJsonCommunication& sender,QAbstractSocket::SocketError error)
+void MainWindow::onSocketError(QJsonCommunication&, QAbstractSocket::SocketError)
 {
     exitApp = false;
     close();
@@ -46,7 +83,7 @@ void MainWindow::onChatSend()
 {
     QVariantMap data;
     data.insert("message", ui->textEditMessage->toPlainText());
-    comm->sendNotification(REQ_MESSAGE, data);
+    comm->sendNotification(Notifications::MESSAGE, data);
     ui->textEditMessage->setPlainText("");
 }
 
@@ -62,17 +99,17 @@ void MainWindow::exitClick()
     close();
 }
 
-void MainWindow::onPlayersClicked()
+void MainWindow::refreshPlayerList()
 {
-    comm->sendRequest(REQ_GET_PLAYERS, QVariant(), [this](const QString& resp, const QVariant& respData)
+    comm->sendRequest(Request::GET_PLAYERS, QVariant(), [this](const QString& resp, const QVariant& respData)
     {
-        if (resp != RESP_OK)
+        if (resp != Response::OK)
         {
             qDebug() << "Error (get players): " << resp;
             return;
         }
 
-        QStandardItemModel* model = (QStandardItemModel*)ui->listViewPlayers->model();
+        QStandardItemModel* model = static_cast<QStandardItemModel*>(ui->listViewPlayers->model());
         model->clear();
 
         QVariantList plays = respData.toList();
@@ -83,5 +120,38 @@ void MainWindow::onPlayersClicked()
 
             model->appendRow(new QStandardItem(info.getName()));
         }
+        model->sort(0);
+    });
+}
+
+void MainWindow::createGame()
+{
+    bool ok;
+    QString name;
+    while(true)
+    {
+        name = QInputDialog::getText(
+                    this,
+                    "Create game",
+                    "Game name:",
+                    QLineEdit::Normal,
+                    QString(),
+                    &ok
+                    );
+        if (!ok)
+            return;
+        if (name.size())
+            break;
+    }
+    QVariantMap data;
+    data.insert("name", name);
+    comm->sendRequest(Request::CREATE_GAME, data, [this,&name](const QString& resp, const QVariant& respData)
+    {
+        if (resp != Response::OK)
+        {
+            this->ui->textBrowserChat->append("![Game was not created.]");
+            return;
+        }
+        this->ui->textBrowserChat->append("![Game " + name + " was created.]");
     });
 }

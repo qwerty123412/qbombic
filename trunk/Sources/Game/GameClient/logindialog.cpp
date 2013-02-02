@@ -18,15 +18,15 @@ LoginDialog::~LoginDialog()
     delete ui;
 }
 
-void LoginDialog::onConnected(QJsonCommunication &sender)
+void LoginDialog::onConnected(QJsonCommunication &)
 {
     ui->textBrowserLog->append("Connected");
 
     QVariantMap data;
     data.insert("name", ui->lineEditName->text());
-    comm->sendRequest(REQ_LOGIN, data, [this](const QString& resp, const QVariant& respData)
+    comm->sendRequest(Request::LOGIN, data, [this](const QString& resp, const QVariant&)
     {
-        if (resp != RESP_OK)
+        if (resp != Response::OK)
         {
              this->ui->pushButtonConnect->setEnabled(true);
              this->ui->textBrowserLog->append("Login error: " + resp);
@@ -50,7 +50,7 @@ void LoginDialog::onLoginButton()
     comm->connectToHost(ui->lineEditHost->text(), ui->spinBoxPort->value());
 }
 
-void LoginDialog::onSocketError(QJsonCommunication & sender, QAbstractSocket::SocketError error)
+void LoginDialog::onSocketError(QJsonCommunication &, QAbstractSocket::SocketError error)
 {
     QString output;
     QDebug(&output) << error;
