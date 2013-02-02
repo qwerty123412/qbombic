@@ -331,6 +331,7 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
     field.advance();
 
     processBombs();
+    processDeaths();
     processChar();    
 
     if ( textSprite->isVisible() )
@@ -419,6 +420,7 @@ void KAsteroidsView::processBombs()
     for(explosion_it = m_explosions.begin(); explosion_it != m_explosions.end(); explosion_it++) {
         if((*explosion_it)->process()) {
             Explosion* temp = (*explosion_it);
+            m_level_data[ (temp->getY()/TILE_SIZE) * LEVEL_TILES_X + (temp->getX() / TILE_SIZE) ] = 0;
             m_explosions.removeAt(m_explosions.indexOf((*explosion_it)));
             delete temp;
         }
@@ -436,11 +438,11 @@ void KAsteroidsView::processChar()
 
     if(mGoUp) {
 
-        if( ( m_level_data[ floor( (m_player->getX() + t_speed) / TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] == 0)
-            || ( m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
-                    && m_level_data[ floor( (m_player->getX() + t_speed) / TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 2
-                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 2 )
+        if( ( m_level_data[ floor( (m_player->getX() + t_speed) / TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 10
+                && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 10)
+            || ( m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 10
+                    && m_level_data[ floor( (m_player->getX() + t_speed) / TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 11
+                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 11 )
           ) {
             m_player->setXY(m_player->getX(), m_player->getY() - t_speed);
         } else {
@@ -460,11 +462,11 @@ void KAsteroidsView::processChar()
     }
 
     if(mGoDown) {
-        if( (m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor((m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0)
-                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
-                    && m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 2
-                    && m_level_data[ floor((m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 2)) {
+        if( (m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 10
+                && m_level_data[ floor((m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 10)
+                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 10
+                    && m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 11
+                    && m_level_data[ floor((m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 11)) {
             m_player->setXY(m_player->getX(), m_player->getY()+t_speed);
         } else {
             if(!mGoLeft && !mGoRight) {
@@ -483,11 +485,11 @@ void KAsteroidsView::processChar()
     }
 
     if(mGoLeft) {
-        if( (m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] == 0)
-                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
-                    && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] < 2
-                    && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] < 2)) {
+        if( (m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] < 10
+                && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] < 10)
+                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 10
+                    && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] < 11
+                    && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] < 11)) {
             m_player->setXY(m_player->getX() - t_speed, m_player->getY());
         }
         else {
@@ -508,11 +510,11 @@ void KAsteroidsView::processChar()
     }
 
     if(mGoRight) {
-        if( (m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] == 0)
-                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
-                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] <2
-                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] <2)) {
+        if( (m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] < 10
+                && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] < 10)
+                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 10
+                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] <11
+                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] <1)) {
             m_player->setXY(m_player->getX() + t_speed, m_player->getY());
         }
         else {
@@ -557,9 +559,9 @@ void KAsteroidsView::processChar()
             }
 
             // qudrant of bomb placement cannot be walked over
-            m_level_data[ (bomb_pos_y/TILE_SIZE) * LEVEL_TILES_X + (bomb_pos_x / TILE_SIZE) ] = 1;
+            m_level_data[ (bomb_pos_y/TILE_SIZE) * LEVEL_TILES_X + (bomb_pos_x / TILE_SIZE) ] = 10;
 
-            qDebug() << m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X);
+            //qDebug() << m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X);
             m_player->bomb_laid();
         }
 
@@ -569,6 +571,15 @@ void KAsteroidsView::processChar()
         view.centerOn(m_player->getCharacterSprite());
     }
 
+}
+
+void KAsteroidsView::processDeaths() {
+    QList<Character*>::Iterator character_it;
+    for(character_it = m_players.begin(); character_it != m_players.end(); character_it++) {
+        if(m_level_data[ (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X) ] == 1) {
+            (*character_it)->setXY(TILE_SIZE, TILE_SIZE);
+        }
+    }
 }
 
 double KAsteroidsView::randDouble()
