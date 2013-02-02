@@ -66,8 +66,9 @@
 #include <array>
 
 #include "view.h"
+#include "gameuiconstants.h"
 
-#define IMG_BACKGROUND QDir::currentPath() + "/../GameUI/sprites/grass_smaller.png"
+#define IMG_BACKGROUND GameUIConstants::getBaseDir() + "/sprites/grass_smaller.png"
 
 #define FPS           60
 #define REFRESH_DELAY           1000/FPS
@@ -264,10 +265,8 @@ void KAsteroidsView::newPlayer()
 }
 
 bool KAsteroidsView::readSprites()
-{        
-    QString sprites_prefix = QDir::currentPath() + "/../GameUI/sprites/";
-
-    std::cout << QDir::currentPath().toStdString() << std::endl;
+{
+    QString sprites_prefix = GameUIConstants::getBaseDir() + "/sprites/";
 
     int i = 0;
     while ( kas_animations[i].id )

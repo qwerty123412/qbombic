@@ -49,3 +49,11 @@ else:unix: LIBS += -L/usr/lib/x86_64-linux-gnu/ -lqjson
 
 INCLUDEPATH += /usr/include
 DEPENDPATH += /usr/include
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../GameUI/release/ -lGameUI
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../GameUI/debug/ -lGameUI
+else:symbian: LIBS += -lGameUI
+else:unix: LIBS += -L$$OUT_PWD/../../GameUI/ -lGameUI
+
+INCLUDEPATH += $$PWD/../../GameUI
+DEPENDPATH += $$PWD/../../GameUI
