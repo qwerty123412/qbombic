@@ -73,25 +73,9 @@
 #define FPS           60
 #define REFRESH_DELAY           1000/FPS
 
-#define SHIP_SPEED              0.3
-#define MISSILE_SPEED           10.0
-#define SHIP_STEPS              64
-#define ROTATE_RATE             2
-#define SHIELD_ON_COST          1
-#define SHIELD_HIT_COST         30
-#define BRAKE_ON_COST           4
-
-#define MAX_ROCK_SPEED          2.5
-#define MAX_POWERUP_SPEED       1.5
-#define MAX_SHIP_SPEED		12
-#define MAX_BRAKES              5
-#define MAX_SHIELDS             5
-#define MAX_FIREPOWER		5
-
 #define TEXT_SPEED              4
 
 #define MOVEMENT_SPEED          5
-//#define TILE_SIZE               69
 #define TILE_SIZE               48
 #define LEVEL_TILES_X           26
 #define LEVEL_TILES_Y           18
@@ -120,7 +104,7 @@ KAsteroidsView::KAsteroidsView( QWidget *parent)
     : QWidget( parent),      
       field(0, 0, LEVEL_TILES_X*TILE_SIZE, LEVEL_TILES_Y*TILE_SIZE),
       view(&field, this)
-{    
+{
 
     m_level_data = std::vector<int>(LEVEL_TILES_X*LEVEL_TILES_Y, 0); // pocet prvku, hodnota
     for(int i = 0; i < LEVEL_TILES_X; i++) {
@@ -198,7 +182,6 @@ void KAsteroidsView::reset()
     mFrameNum = 0;
     mPaused = FALSE;
 
-    ship->hide();   
 }
 
 // - --
@@ -246,8 +229,7 @@ void KAsteroidsView::newPlayer()
     if ( !initialized )
 	return;
 
-    ship->setPos( TILE_SIZE*1, TILE_SIZE*1 );
-    ship->setFrame( 0 );
+    m_player->setXY(TILE_SIZE * 1, TILE_SIZE * 1);
 
     mGoUp = false;
     mGoDown = false;
@@ -261,7 +243,7 @@ void KAsteroidsView::newPlayer()
     bombCooldown = 0;
     //end
 
-    ship->show();
+    //ship->show();
 }
 
 bool KAsteroidsView::readSprites()
@@ -291,10 +273,12 @@ bool KAsteroidsView::readSprites()
     m_player = new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), 2*TILE_SIZE, 2*TILE_SIZE);
     m_players.push_back(m_player);
 
+    /*
     ship = new AnimatedPixmapItem( animation[B_PINGU], &field );
     ship->hide();    
+    */
 
-    return (!ship->image(0).isNull());
+    return (!m_player->getCharacterSprite()->image(0).isNull());
 }
 
 void KAsteroidsView::showText( const QString &text, const QColor &color, bool scroll )
@@ -343,8 +327,8 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
 {
     field.advance();
 
-    processChar();
     processBombs();
+    processChar();    
 
     if ( textSprite->isVisible() )
     {
@@ -358,13 +342,6 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
 	if ( textSprite->sceneBoundingRect().y() > (field.height()-textSprite->boundingRect().height())/2 )
 	    textDy = 0;
     }
-
-    /*
-    if ( vitalsChanged && !(mFrameNum % 10) ) {
-	emit updateVitals();
-	vitalsChanged = FALSE;
-    }
-    */
 
     mFrameNum++;
 }
@@ -417,6 +394,12 @@ void KAsteroidsView::processBombs()
             m_bombs.swap(0, m_bombs.indexOf(*it));
             m_bombs.removeAt(0);
 
+            m_level_data[ (temp->getY()/TILE_SIZE) * LEVEL_TILES_X + (temp->getX() / TILE_SIZE) ] = 0;
+/*
+            if(m_player->get_last_bomb()->get_bomb_id() == temp->get_bomb_id()) {
+                m_player->set_last_bomb(NULL);
+            }
+*/
             m_explosions.push_back(new Explosion(new AnimatedPixmapItem( animation[B_EXPLOSION], &field ),
                                        temp->getX(),
                                        temp->getY(),
@@ -449,25 +432,19 @@ void KAsteroidsView::processChar()
     }
 
     if(mGoUp) {
-        /*
-        if( m_level_data[ floor( (ship->x() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() - t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (ship->x() + ship->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() - t_speed)/TILE_SIZE) ] == 0) {
-            ship->setPos(ship->x(), ship->y()-t_speed );
-        }
 
-        if( m_level_data[ m_player->getUpperLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0
-                && m_level_data[ m_player->getUpperRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0) {
-            m_player->setXY(m_player->getX(), m_player->getY() - t_speed);
-        }
-        */
-        if( m_level_data[ floor( (m_player->getX() + t_speed) / TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (m_player->getX() + ship->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] == 0) {
+        if( ( m_level_data[ floor( (m_player->getX() + t_speed) / TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] == 0
+                && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] == 0)
+            || ( m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
+                    && m_level_data[ floor( (m_player->getX() + t_speed) / TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 2
+                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] < 2 )
+          ) {
             m_player->setXY(m_player->getX(), m_player->getY() - t_speed);
         } else {
             if(!mGoLeft && !mGoRight) {
                 t_speed = sqrt((t_speed*t_speed)/2);
                 if(m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] != 0
-                        && m_level_data[ floor( (ship->x() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] != 0) {} else {
+                        && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] != 0) {} else {
                     if(m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() - t_speed)/TILE_SIZE) ] != 0) {
                         m_player->setXY(m_player->getX() + t_speed, m_player->getY());
                     }
@@ -477,49 +454,14 @@ void KAsteroidsView::processChar()
                 }
             }
         }
-/*
-        else {
-            if(!mGoLeft && !mGoRight) {
-                t_speed = sqrt((t_speed*t_speed)/2);
-                if(m_level_data[ floor( (ship->x() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() - t_speed)/TILE_SIZE) ] != 0) {
-                    ship->setPos(ship->x() + t_speed, ship->y());
-                }
-                if(m_level_data[ floor( (ship->x() + ship->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() - t_speed)/TILE_SIZE) ] != 0) {
-                    ship->setPos(ship->x() - t_speed, ship->y());
-                }
-            }
-        }
-
-        else {
-            if(!mGoLeft && !mGoRight) {
-                t_speed = sqrt((t_speed*t_speed)/2);
-                if(m_level_data[ m_player->getUpperLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0
-                        && m_level_data[ m_player->getUpperRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0) {} else {
-                    if(m_level_data[ m_player->getUpperLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0) {
-                        m_player->setXY(m_player->getX() + t_speed, m_player->getY());
-                    }
-                    if(m_level_data[ m_player->getUpperRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0) {
-                        m_player->setXY(m_player->getX() - t_speed, m_player->getY());
-                    }
-                }
-            }
-        }
-        */
     }
 
     if(mGoDown) {
-        /*
-        if( m_level_data[ floor( (ship->x() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + ship->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor((ship->x() + ship->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + ship->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0) {
-            ship->setPos(ship->x(), ship->y()+t_speed);
-        }
-
-        if( m_level_data[ m_player->getLowerLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0
-                && m_level_data[ m_player->getLowerRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0) {
-            m_player->setXY(m_player->getX(), m_player->getY() + t_speed);
-        }*/
-        if( m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor((m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0) {
+        if( (m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0
+                && m_level_data[ floor((m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] == 0)
+                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
+                    && m_level_data[ floor( (m_player->getX() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 2
+                    && m_level_data[ floor((m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() + t_speed)/TILE_SIZE) ] < 2)) {
             m_player->setXY(m_player->getX(), m_player->getY()+t_speed);
         } else {
             if(!mGoLeft && !mGoRight) {
@@ -535,50 +477,14 @@ void KAsteroidsView::processChar()
                 }
             }
         }
-/*
-        else {
-            if(!mGoLeft && !mGoRight) {
-                t_speed = sqrt((t_speed*t_speed)/2);
-                if(m_level_data[ floor( (ship->x() + t_speed) /TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + ship->boundingRect().height() + t_speed)/TILE_SIZE) ] != 0) {
-                    ship->setPos(ship->x() + t_speed, ship->y());
-                }
-                if(m_level_data[ floor((ship->x() + ship->boundingRect().width() - t_speed )/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + ship->boundingRect().height() + t_speed)/TILE_SIZE) ] != 0) {
-                    ship->setPos(ship->x() - t_speed, ship->y());
-                }
-            }
-        }
-
-        else {
-            if(!mGoLeft && !mGoRight) {
-                t_speed = sqrt((t_speed*t_speed)/2);
-                if(m_level_data[ m_player->getLowerLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0
-                        && m_level_data[ m_player->getLowerRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0) {} else {
-                    if(m_level_data[ m_player->getLowerLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0) {
-                        m_player->setXY(m_player->getX() + t_speed, m_player->getY());
-                    }
-                    if(m_level_data[ m_player->getLowerRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] != 0) {
-                        m_player->setXY(m_player->getX() - t_speed, m_player->getY());
-                    }
-                }
-            }
-        }*/
     }
 
     if(mGoLeft) {
-        /*
-        if( m_level_data[ floor( (ship->x()-t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (ship->x()-t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + ship->boundingRect().height() - t_speed )/TILE_SIZE) ] == 0) {
-            ship->setPos(ship->x()-t_speed, ship->y());
-        }
-
-        if( m_level_data[ m_player->getUpperLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0
-                && m_level_data[ m_player->getLowerLeftQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0) {
-            //ship->setPos(ship->x()-t_speed, ship->y());
-            m_player->setXY(m_player->getX() - t_speed, m_player->getY());
-        }
-        */
-        if( m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] == 0) {
+        if( (m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] == 0
+                && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] == 0)
+                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
+                    && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] < 2
+                    && m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] < 2)) {
             m_player->setXY(m_player->getX() - t_speed, m_player->getY());
         }
         else {
@@ -592,13 +498,6 @@ void KAsteroidsView::processChar()
                     if(m_level_data[ floor( (m_player->getX() - t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed )/TILE_SIZE) ] != 0) {
                         m_player->setXY(m_player->getX(), m_player->getY() - t_speed);
                     }
-                    /*
-                    if(m_level_data[ floor( (ship->x()-t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + t_speed)/TILE_SIZE) ] != 0) {
-                        ship->setPos(ship->x(), ship->y() + t_speed);
-                    }
-                    if(m_level_data[ floor( (ship->x()-t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + ship->boundingRect().height() - t_speed )/TILE_SIZE) ] != 0) {
-                        ship->setPos(ship->x(), ship->y() - t_speed);
-                    }*/
                 }
             }
         }
@@ -606,20 +505,11 @@ void KAsteroidsView::processChar()
     }
 
     if(mGoRight) {
-        /*
-        if( m_level_data[ floor( (ship->x() + ship->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (ship->x() + ship->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((ship->y() + ship->boundingRect().height() - t_speed)/TILE_SIZE) ] == 0) {
-            ship->setPos(ship->x()+t_speed, ship->y());
-        }
-
-        if( m_level_data[ m_player->getUpperRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0
-                && m_level_data[ m_player->getLowerRightQuadrant(TILE_SIZE, t_speed, LEVEL_TILES_X) ] == 0) {
-            //ship->setPos(ship->x()+t_speed, ship->y());
-            m_player->setXY(m_player->getX() + t_speed, m_player->getY());
-        }
-*/
-        if( m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] == 0
-                && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] == 0) {
+        if( (m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] == 0
+                && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] == 0)
+                || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1
+                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] <2
+                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] <2)) {
             m_player->setXY(m_player->getX() + t_speed, m_player->getY());
         }
         else {
@@ -649,25 +539,30 @@ void KAsteroidsView::processChar()
         int bomb_pos_y = (int)floor( (m_player->getY() + m_player->getCharacterSprite()->boundingRect().height()/2) / TILE_SIZE)*TILE_SIZE;
 
         if(check_bomb_placement_possibility(bomb_pos_x, bomb_pos_y)) {
-            if(!m_bombs.isEmpty() && !(m_bombs.last()->getX() == bomb_pos_x && m_bombs.last()->getY() == bomb_pos_y)) {
-                m_bombs.push_back(new Bomb(new AnimatedPixmapItem( animation[B_BOMB], &field ),
+            if(!m_bombs.isEmpty() && !(m_bombs.last()->getX() == bomb_pos_x && m_bombs.last()->getY() == bomb_pos_y)) {                
+                m_bombs.push_back((new Bomb(new AnimatedPixmapItem( animation[B_BOMB], &field ),
                                            bomb_pos_x,
                                            bomb_pos_y,
-                                           FPS*2));
+                                           FPS*2))->set_bomb_ownership(true));
+                //m_player->set_last_bomb(m_bombs.last());
             } else if(m_bombs.isEmpty()) {
-                m_bombs.push_back(new Bomb(new AnimatedPixmapItem( animation[B_BOMB], &field ),
+                m_bombs.push_back((new Bomb(new AnimatedPixmapItem( animation[B_BOMB], &field ),
                                            bomb_pos_x,
                                            bomb_pos_y,
-                                           FPS*2));
+                                           FPS*2))->set_bomb_ownership(true));
+                //m_player->set_last_bomb(m_bombs.last());
             }
 
+            // qudrant of bomb placement cannot be walked over
+            m_level_data[ (bomb_pos_y/TILE_SIZE) * LEVEL_TILES_X + (bomb_pos_x / TILE_SIZE) ] = 1;
+
+            qDebug() << m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X);
             m_player->bomb_laid();
         }
 
     }
 
-    if ( ship->isVisible() ) {
-        //view.centerOn(ship);
+    if ( m_player->getCharacterSprite()->isVisible() ) {
         view.centerOn(m_player->getCharacterSprite());
     }
 

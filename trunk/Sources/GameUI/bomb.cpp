@@ -8,6 +8,9 @@ Bomb::Bomb(AnimatedPixmapItem *bomb, int pos_x, int pos_y, int ttl, QObject *par
     time_to_live = ttl;
     m_pos_x = pos_x;
     m_pos_y = pos_y;
+    m_bomb_owner = false;
+    m_bomb_sent = false;
+    m_id = qrand() % 10000;
 }
 
 bool Bomb::process() {

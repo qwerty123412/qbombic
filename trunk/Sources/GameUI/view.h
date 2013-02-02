@@ -76,7 +76,6 @@ public:
     void reset();        
     void newGame();
     void endGame();
-    //void newShip();
     void newPlayer();
 
     void goUp( bool r ) { mGoUp = r; }
@@ -94,17 +93,6 @@ public:
 
     void showText( const QString &text, const QColor &color, bool scroll=TRUE );
     void hideText();
-
-/*
-    int shots() const { return shotsFired; }
-    int hits() const { return shotsHit; }
-    int power() const { return shipPower; }
-
-    int teleportCount() const { return mTeleportCount; }
-    int brakeCount() const { return mBrakeCount; }
-    int shieldCount() const { return mShieldCount; }
-    int shootCount() const { return mShootCount; }
-*/
 
 signals:
     void shipKilled();

@@ -47,3 +47,8 @@ int Character::getLowerRightQuadrant(int tile_size, int speed, int level_tiles_x
     return floor((m_pos_x + m_character_sprite->boundingRect().width() - speed )/tile_size)
             + level_tiles_x * floor((m_pos_y + m_character_sprite->boundingRect().height() + speed)/tile_size);
 }
+
+int Character::get_quadrant_character_center(int tile_size, int level_tiles_x) {
+    return floor((m_pos_x + m_character_sprite->boundingRect().width()/2 )/tile_size)
+            + level_tiles_x * floor((m_pos_y + m_character_sprite->boundingRect().height()/2)/tile_size);
+}
