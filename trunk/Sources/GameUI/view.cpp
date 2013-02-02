@@ -548,13 +548,13 @@ void KAsteroidsView::processChar()
                 m_bombs.push_back((new Bomb(new AnimatedPixmapItem( animation[B_BOMB], &field ),
                                            bomb_pos_x,
                                            bomb_pos_y,
-                                           FPS*2))->set_bomb_ownership(true));
+                                           FPS*2))->set_bomb_ownership(m_player->get_id()));
                 //m_player->set_last_bomb(m_bombs.last());
             } else if(m_bombs.isEmpty()) {
                 m_bombs.push_back((new Bomb(new AnimatedPixmapItem( animation[B_BOMB], &field ),
                                            bomb_pos_x,
                                            bomb_pos_y,
-                                           FPS*2))->set_bomb_ownership(true));
+                                           FPS*2))->set_bomb_ownership(m_player->get_id()));
                 //m_player->set_last_bomb(m_bombs.last());
             }
 

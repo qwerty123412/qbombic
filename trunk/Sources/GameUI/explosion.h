@@ -16,6 +16,7 @@ public:
               QList<Bomb*> *bombs);
 
     bool check_for_bomb(QList<Bomb*> *bombs);
+    Explosion* set_bomb_ownership( int character_id ) { m_bomb_owner = character_id; return this; }
 
 private:
     int m_type;
