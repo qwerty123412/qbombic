@@ -18,6 +18,11 @@ public:
     void setXY(int x, int y);
     void explode();
 
+    Bomb* set_bomb_ownership( bool state ) { m_bomb_owner = state; return this; }
+    bool get_bomb_ownership() { return m_bomb_owner; }
+
+    int get_bomb_id() { return m_id; }
+
     virtual ~Bomb();
 
 signals:
@@ -25,8 +30,10 @@ signals:
 public slots:
     
 protected:
+    int m_id;
     int m_pos_x, m_pos_y;
     int time_to_live;
+    bool m_bomb_owner, m_bomb_sent;
     AnimatedPixmapItem* m_bomb;
 };
 

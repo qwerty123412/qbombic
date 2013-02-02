@@ -17,7 +17,7 @@ SOURCES += ledmeter.cpp main.cpp toplevel.cpp view.cpp animateditem.cpp \
     character.cpp \
     gameuiconstants.cpp
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++0x
 
 RESOURCES += portedasteroids.qrc
 
