@@ -4,4 +4,5 @@ SUBDIRS += \
     GameServer \
     GameShared \
     GameClient \
-    ProtocolLib
+    ProtocolLib \
+    ../GameUI

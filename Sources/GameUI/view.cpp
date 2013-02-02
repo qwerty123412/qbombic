@@ -67,7 +67,7 @@
 
 #include "view.h"
 
-#define IMG_BACKGROUND QDir::currentPath() + "/../portedasteroids/sprites/grass_smaller.png"
+#define IMG_BACKGROUND QDir::currentPath() + "/../GameUI/sprites/grass_smaller.png"
 
 #define FPS           60
 #define REFRESH_DELAY           1000/FPS
@@ -265,7 +265,7 @@ void KAsteroidsView::newPlayer()
 
 bool KAsteroidsView::readSprites()
 {        
-    QString sprites_prefix = QDir::currentPath() + "/../portedasteroids/sprites/";
+    QString sprites_prefix = QDir::currentPath() + "/../GameUI/sprites/";
 
     std::cout << QDir::currentPath().toStdString() << std::endl;
 

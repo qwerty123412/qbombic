@@ -203,7 +203,7 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     QFont smallFont( "helvetica", 14 );
     hbd->addSpacing( 10 );
 
-    QString sprites_prefix = QDir::currentPath() + "/../portedasteroids/sprites/";
+    QString sprites_prefix = QDir::currentPath() + "/../GameUI/sprites/";
 
     QPixmap pm( sprites_prefix + "powerups/brake.png" );
     label = new QLabel( mainWin );
