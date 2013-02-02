@@ -27,6 +27,7 @@ public:
     void bomb_laid() { m_bomb_count++; }
     void bomb_exploded() { m_bomb_count--; }
     void set_bomb_limit(int limit) { m_max_bombs = limit; }
+    int get_id() { return m_id; }
 
     void set_last_bomb(Bomb* bomb) { m_last_bomb = bomb; }
     Bomb* get_last_bomb() { return m_last_bomb; }
@@ -36,6 +37,7 @@ signals:
 public slots:
     
 private:
+    int m_id;
     int m_pos_x, m_pos_y;
     int m_max_bombs, m_bomb_count;
     AnimatedPixmapItem* m_character_sprite;

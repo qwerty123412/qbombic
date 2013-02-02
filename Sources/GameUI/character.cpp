@@ -9,6 +9,7 @@ Character::Character(AnimatedPixmapItem *character_sprite, int pos_x, int pos_y,
     m_pos_y = pos_y;
     m_max_bombs = 3;
     m_bomb_count = 0;
+    m_id = qrand() % 10000;
 }
 
 int Character::getX() {
