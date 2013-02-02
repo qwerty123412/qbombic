@@ -19,7 +19,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     qplayer.cpp \
-    qgameserver.cpp
+    qgameserver.cpp \
+    qgame.cpp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ProtocolLib/release/ -lProtocolLib
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ProtocolLib/debug/ -lProtocolLib
@@ -31,7 +32,8 @@ DEPENDPATH += $$PWD/../ProtocolLib
 
 HEADERS += \
     qplayer.h \
-    qgameserver.h
+    qgameserver.h \
+    qgame.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../GameShared/release/ -lGameShared
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../GameShared/debug/ -lGameShared

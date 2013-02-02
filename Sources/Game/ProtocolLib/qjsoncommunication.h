@@ -24,9 +24,12 @@ public:
     void connectToHost(const QString& host, quint16 port);
     void sendRequest(const QString &request, const QVariant& optionalData,
                      const std::function<void (const QString &, const QVariant &)> callback);
-    void sendNotification(const QString &request, const QVariant& optionalData);
+    void sendNotification(const QString &request, const QVariant& optionalData = QVariant());
     void registerRequest(const QString& req, std::function<void(std::shared_ptr<QJsonRequest>)> callback);
-    void registerNotification(const QString& req, std::function<void(const QVariant&)> callback);
+    void registerNotification(const QString& notif, std::function<void(const QVariant&)> callback);
+
+    void clearRequests(const QString& req);
+    void clearNotifications(const QString& notif);
 
     std::weak_ptr<QJsonCommunication> getThis() { return _this; }
     void setThis(std::weak_ptr<QJsonCommunication> val) { _this = val; }

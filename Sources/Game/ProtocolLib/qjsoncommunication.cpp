@@ -51,7 +51,7 @@ void QJsonCommunication::sendNotification(const QString &request, const QVariant
     m_socket->writeData(req);
 }
 
-void QJsonCommunication::sendResponse(const QString& response, uint id, const QVariant &optionalData)
+void QJsonCommunication::sendResponse(const QString& response, uint id, const QVariant &optionalData = QVariant())
 {
     QVariantMap req;
     req.insert("response", response);
@@ -151,4 +151,14 @@ void QJsonCommunication::registerRequest(const QString &req, std::function<void 
 void QJsonCommunication::registerNotification(const QString &req, std::function<void(const QVariant &)> callback)
 {
     notificationCallbacks.insert(req, callback);
+}
+
+void QJsonCommunication::clearRequests(const QString &req)
+{
+    requestCallbacks.remove(req);
+}
+
+void QJsonCommunication::clearNotifications(const QString &notif)
+{
+    notificationCallbacks.remove(notif);
 }

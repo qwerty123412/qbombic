@@ -16,12 +16,15 @@ TEMPLATE = lib
 DEFINES += GAMESHARED_LIBRARY
 
 SOURCES += gameshared.cpp \
-    qplayerinfo.cpp
+    qplayerinfo.cpp \
+    qgameinfo.cpp \
+    RequestsResponses.cpp
 
 HEADERS += gameshared.h\
         GameShared_global.h \
     qplayerinfo.h \
-    RequestsResponses.h
+    RequestsResponses.h \
+    qgameinfo.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

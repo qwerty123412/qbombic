@@ -31,7 +31,9 @@ public slots:
     void onChatSend();
     void logoutClick();
     void exitClick();
-    void onPlayersClicked();
+    void refreshPlayerList();
+
+    void createGame();
     
 private:
     Ui::MainWindow *ui;

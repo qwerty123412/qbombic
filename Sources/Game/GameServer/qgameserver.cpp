@@ -1,7 +1,7 @@
 #include "qgameserver.h"
 
 #include "qplayerinfo.h"
-
+#include "qgameinfo.h"
 #include "RequestsResponses.h"
 
 using namespace std::placeholders;
@@ -52,8 +52,7 @@ void QGameServer::onNewConnect()
 
         connect(comm, SIGNAL(disconnected(QJsonCommunication&)), SLOT(onDisconnected(QJsonCommunication&)));
 
-        comm->registerRequest(REQ_LOGIN, std::bind(&QGameServer::onLogin, this, _1));
-        comm->registerRequest(REQ_GET_PLAYERS, std::bind(&QGameServer::onGetPlayers, this, _1));
+        comm->registerRequest(Request::LOGIN, std::bind(&QGameServer::onLogin, this, _1));
     }
 
     cleanGarbageComms();
@@ -67,6 +66,9 @@ void QGameServer::onDisconnected(QJsonCommunication& comm)
     if (player != nullptr)
     {
         players.remove(&comm);
+        QPlayerInfo info;
+        player->writeInfo(info);
+        broadcastNotification(Notifications::QUIT_PLAYER, QJson::QObjectHelper::qobject2qvariant(&info));
         delete(player);
     }
 
@@ -77,32 +79,20 @@ void QGameServer::onDisconnected(QJsonCommunication& comm)
 
 void QGameServer::onLogin(std::shared_ptr<QJsonRequest> request)
 {
-    if (players.contains(request->getComm())) //already registred
+    QJsonCommunication* comm = request->getComm();
+    if (players.contains(comm)) //already registred
     {
-        request->sendResponse(RESP_FAILED);
+        request->sendResponse(Response::FAILED);
         return;
     }
+    QString name = extractQVariantItem(request, "name");
+    QPlayer* player = new QPlayer(this, comm, name);
 
-    QString name = request->getData()->toMap()["name"].toString();
-    QPlayer* player = new QPlayer(this, request->getComm(), name);
-    players.insert(request->getComm(), player);
-
-    request->sendResponse(RESP_OK);
-}
-
-void QGameServer::onGetPlayers(std::shared_ptr<QJsonRequest> request)
-{
-    QVariantList plays;
-
+    request->sendResponse(Response::OK);
     QPlayerInfo info;
-    for(auto client : players.values())
-    {
-        client->writeInfo(info);
-
-        plays << QJson::QObjectHelper::qobject2qvariant(&info);
-    }
-
-    request->sendResponse(RESP_OK, plays);
+    player->writeInfo(info);
+    broadcastNotification(Notifications::NEW_PLAYER, QJson::QObjectHelper::qobject2qvariant(&info));
+    players.insert(request->getComm(), player);
 }
 
 void QGameServer::cleanGarbageComms()
@@ -111,3 +101,45 @@ void QGameServer::cleanGarbageComms()
         delete(c);
     garbageComms.clear();
 }
+
+QGame* QGameServer::createGame(QPlayer *player, const QString &name)
+{
+    if (games.contains(name))
+        return nullptr;
+    QGame* ret = new QGame(this, name, player);
+    games.insert(name, ret);
+    gameListChanged();
+    return ret;
+}
+
+void QGameServer::closeGame(QPlayer *player)
+{
+    games.remove(player->getGame()->getName());
+    delete player->getGame();
+    gameListChanged();
+}
+
+void QGameServer::gameListChanged()
+{
+    QGameInfo info;
+    QVariantList infos;
+    for(QGame* game : games.values())
+    {
+        game->writeInfo(info);
+        infos << QJson::QObjectHelper::qobject2qvariant(&info);
+    }
+    broadcastNotification(Notifications::GAME_LIST, infos);
+}
+
+QGame* QGameServer::getGame(const QString &name)
+{
+    return games.contains(name) ? games[name] : nullptr;
+}
+
+
+
+
+
+
+
+
