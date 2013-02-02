@@ -273,6 +273,9 @@ bool KAsteroidsView::readSprites()
     m_player = new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), 2*TILE_SIZE, 2*TILE_SIZE);
     m_players.push_back(m_player);
 
+    //TODO: do it otherway
+    m_players.push_back(new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), 2*TILE_SIZE, 2*TILE_SIZE, this));
+
     /*
     ship = new AnimatedPixmapItem( animation[B_PINGU], &field );
     ship->hide();    

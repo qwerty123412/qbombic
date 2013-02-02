@@ -41,6 +41,7 @@ struct Notifications
     static const QString GAME_LIST;//send server
     static const QString MESSAGE;//send client (outgoing) & server (incoming)
     static const QString QUIT_GAME;//send client
+    static const QString GAME_STATE; //oba
 };
 
 #endif // REQUESTSRESPONSES_H

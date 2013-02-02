@@ -18,13 +18,15 @@ DEFINES += GAMESHARED_LIBRARY
 SOURCES += gameshared.cpp \
     qplayerinfo.cpp \
     qgameinfo.cpp \
-    RequestsResponses.cpp
+    RequestsResponses.cpp \
+    qgamestate.cpp
 
 HEADERS += gameshared.h\
         GameShared_global.h \
     qplayerinfo.h \
     RequestsResponses.h \
-    qgameinfo.h
+    qgameinfo.h \
+    qgamestate.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

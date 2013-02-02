@@ -35,6 +35,9 @@ public:
     void onGameLeave(const QVariant&);// just notification
     void onGameCommand(const QVariant& command);//just notification
 
+
+    void onGameState(const QVariant& state);
+
     void gameQuit() { game = nullptr; }
 
 signals:

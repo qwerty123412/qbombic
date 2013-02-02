@@ -11,7 +11,8 @@
 
 #include "qjsoncommunication.h"
 #include "toplevel.h"
-#include "qgame.h"
+
+class QGame;
 
 namespace Ui {
 class MainWindow;
@@ -26,6 +27,8 @@ public:
     ~MainWindow();
 
     bool getExitApp() { return exitApp; }
+
+    std::shared_ptr<QJsonCommunication> getComm() const { return comm; }
 
 public slots:
     void setComm(std::shared_ptr<QJsonCommunication> value);

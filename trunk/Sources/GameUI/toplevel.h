@@ -69,6 +69,8 @@ public:
     KAstTopLevel( QWidget *parent = 0);
     virtual ~KAstTopLevel();
 
+    KAsteroidsView* getView() const { return view; }
+
 private:
     void playSound( const char *snd );
     void readSoundMapping();

@@ -32,10 +32,9 @@ public:
     void command(QPlayer* player, const QString& command);
     bool start();
 
-
     void writeInfo(QGameInfo& info) const;
 
-    void broadcastNotification(const QString& notif, const QVariant& data = QVariant());
+    void broadcastNotification(const QPlayer* except, const QString& notif, const QVariant& data = QVariant());
 
 signals:
 
