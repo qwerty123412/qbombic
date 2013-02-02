@@ -106,9 +106,10 @@ QGame* QGameServer::createGame(QPlayer *player, const QString &name)
 {
     if (games.contains(name))
         return nullptr;
+
     QGame* ret = new QGame(this, name, player);
     games.insert(name, ret);
-    gameListChanged();
+
     return ret;
 }
 

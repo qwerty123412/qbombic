@@ -22,23 +22,20 @@ QGame::~QGame()
 void QGame::writeInfo(QGameInfo &info) const
 {
     QPlayerInfo playerInfo;
-    QList<QPlayerInfo> _members;
+    /*QList<QString> _members;
     for( QPlayer* player : members )
     {
-        player->writeInfo(playerInfo);
-        _members.push_back(playerInfo);
-    }
-    info.setMembers(_members);
-
-    creator->writeInfo(playerInfo);
-    info.setCreator(playerInfo);
+        _members.push_back(player->getName());
+    }*/
+    info.setPlayers(members.count());
+    info.setCreator(creator->getName());
 
     info.setName(name);
 }
 
 bool QGame::join(QPlayer *player)
 {
-    if (members.size() == 6)
+    if (members.size() >= 6)
         return false;
     members.insert(player);
     server->gameListChanged();

@@ -69,7 +69,7 @@ void QJsonSocket::readReady()
             m_socket->close();
         }
 
-        //qDebug() << json;
+        //qDebug() << "Reading: " << json;
         emit dataCame(data);
     }
 }
