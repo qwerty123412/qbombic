@@ -111,6 +111,7 @@ protected:
 
     void processChar();
     void processBombs();
+    void processDeaths();
 
     double randDouble();
     int randInt( int range );
