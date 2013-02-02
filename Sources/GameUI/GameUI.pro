@@ -1,17 +1,23 @@
-TEMPLATE = app
+TEMPLATE = lib
 INCLUDEPATH += .
+
+TARGET = GameUI
+
+DEFINES += GAMEUI_LIBRARY
 
 # Input
 HEADERS += ledmeter.h sprites.h toplevel.h view.h animateditem.h \
     bomb.h \
     explosion.h \
-    character.h
+    character.h \
+    gameuiconstants.h
 SOURCES += ledmeter.cpp main.cpp toplevel.cpp view.cpp animateditem.cpp \
     bomb.cpp \
     explosion.cpp \
-    character.cpp
+    character.cpp \
+    gameuiconstants.cpp
 
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 
 RESOURCES += portedasteroids.qrc
 

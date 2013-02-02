@@ -62,6 +62,7 @@
 
 #include "toplevel.h"
 #include "ledmeter.h"
+#include "gameuiconstants.h"
 
 
 #define SB_SCORE	1
@@ -203,7 +204,7 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     QFont smallFont( "helvetica", 14 );
     hbd->addSpacing( 10 );
 
-    QString sprites_prefix = QDir::currentPath() + "/../GameUI/sprites/";
+    QString sprites_prefix = GameUIConstants::getBaseDir() + "/sprites/";
 
     QPixmap pm( sprites_prefix + "powerups/brake.png" );
     label = new QLabel( mainWin );

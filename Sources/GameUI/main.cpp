@@ -41,9 +41,11 @@
 #include <QtGui>
 
 #include "toplevel.h"
+#include "gameuiconstants.h"
 
 int main(int argc, char **argv)
 {
+    GameUIConstants::setBaseDir(QDir::currentPath() + "/GameUI");
     Q_INIT_RESOURCE(portedasteroids);
 
     QApplication app(argc, argv);
