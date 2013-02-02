@@ -20,7 +20,10 @@ QPlayer::QPlayer(QGameServer* server, QJsonCommunication *comm, const QString na
 
 QPlayer::~QPlayer()
 {
-
+    if (game)
+    {
+        server->closeGame(this);
+    }
 }
 
 void QPlayer::onGetPlayerList(std::shared_ptr<QJsonRequest> request)
