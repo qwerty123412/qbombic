@@ -3,6 +3,7 @@
 #include "qplayerinfo.h"
 #include "qgameinfo.h"
 #include "RequestsResponses.h"
+#include "toplevel.h"
 
 #include <QInputDialog>
 #include <QStandardItemModel>
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonSend, SIGNAL(clicked()), SLOT(onChatSend()));
     connect(ui->pushButtonRefreshPlayers, SIGNAL(clicked()), SLOT(refreshPlayerList()));
     connect(ui->pushButtonNewGame, SIGNAL(clicked()), SLOT(createGame()));
+    connect(ui->pushButtonStart, SIGNAL(clicked()), SLOT(startClick()));
 
     ui->listViewPlayers->setModel(new QStandardItemModel(ui->listViewPlayers));
     ui->listViewGames->setModel(new QStandardItemModel(ui->listViewGames));
@@ -68,8 +70,21 @@ void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
             QString label = QString("%1: %2 (%3)").arg(info.getCreator()).arg(info.getName()).arg(info.getPlayers());
             model->appendRow(new QStandardItem(label));
         }
-
     });
+    comm->registerNotification(Notifications::GAME_STARTED, [this](const QVariant& data)
+    {
+        this->ui->textBrowserChat->append("![Game started]");
+
+        gameWindow = new KAstTopLevel(this);
+        connect(gameWindow, SIGNAL(close()), SLOT(gameWindowClosed));
+        gameWindow->show();
+    });
+}
+
+void MainWindow::gameWindowClosed()
+{
+    delete gameWindow;
+    gameWindow = nullptr;
 }
 
 void MainWindow::onSocketError(QJsonCommunication&, QAbstractSocket::SocketError)
@@ -96,6 +111,22 @@ void MainWindow::exitClick()
 {
     exitApp = true;
     close();
+}
+
+void MainWindow::startClick()
+{
+    QVariantMap data;
+    data.insert("name", gameName);
+    comm->sendRequest(Request::START_GAME, data, [this](const QString& resp, const QVariant& respData)
+    {
+        if (resp != Response::OK)
+        {
+            this->ui->textBrowserChat->append("![Game was not started.]");
+            return;
+        }
+
+        this->ui->textBrowserChat->append("![Game was started.]");
+    });
 }
 
 void MainWindow::refreshPlayerList()
@@ -144,14 +175,18 @@ void MainWindow::createGame()
     }
     QVariantMap data;
     data.insert("name", name);
+    gameName = name;
+
     comm->sendRequest(Request::CREATE_GAME, data, [this](const QString& resp, const QVariant& respData)
     {
         if (resp != Response::OK)
         {
+            gameName = nullptr;
             this->ui->textBrowserChat->append("![Game was not created.]");
             return;
         }
 
         this->ui->textBrowserChat->append("![Game was created.]");
+        this->ui->pushButtonStart->setEnabled(true);
     });
 }

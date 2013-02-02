@@ -29,6 +29,7 @@ struct Request
     static const QString GET_PLAYERS;//send client
     static const QString CREATE_GAME;//send client
     static const QString JOIN_GAME;//send client
+    static const QString START_GAME;//send client
 };
 
 struct Notifications
@@ -36,6 +37,7 @@ struct Notifications
     static const QString NEW_PLAYER;//send server
     static const QString QUIT_PLAYER;//send server
     static const QString GAME_CLOSED;//send server
+    static const QString GAME_STARTED;//send server
     static const QString GAME_LIST;//send server
     static const QString MESSAGE;//send client (outgoing) & server (incoming)
     static const QString QUIT_GAME;//send client

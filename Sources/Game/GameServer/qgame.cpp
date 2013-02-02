@@ -21,8 +21,8 @@ QGame::~QGame()
 
 void QGame::writeInfo(QGameInfo &info) const
 {
-    QPlayerInfo playerInfo;
-    /*QList<QString> _members;
+    /*QPlayerInfo playerInfo;
+    QList<QString> _members;
     for( QPlayer* player : members )
     {
         _members.push_back(player->getName());
@@ -51,4 +51,14 @@ void QGame::leave(QPlayer *player)
 void QGame::command(QPlayer *player, const QString &command)
 {
     throw int(0);// not implemented yet
+}
+
+bool QGame::start()
+{
+    for(QPlayer* player : members)
+    {
+        player->getComm()->sendNotification(Notifications::GAME_STARTED);
+    }
+
+    return true;
 }

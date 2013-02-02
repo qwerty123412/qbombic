@@ -15,6 +15,7 @@ QPlayer::QPlayer(QGameServer* server, QJsonCommunication *comm, const QString na
     comm->registerRequest(Request::GET_PLAYERS, std::bind(&QPlayer::onGetPlayerList, this, _1));
     comm->registerRequest(Request::CREATE_GAME, std::bind(&QPlayer::onGameCreate, this, _1));
     comm->registerRequest(Request::JOIN_GAME, std::bind(&QPlayer::onGameJoin, this, _1));
+    comm->registerRequest(Request::START_GAME, std::bind(&QPlayer::onGameStart, this, _1));
 }
 
 QPlayer::~QPlayer()
@@ -35,6 +36,24 @@ void QPlayer::onGetPlayerList(std::shared_ptr<QJsonRequest> request)
     }
 
     request->sendResponse(Response::OK, plays);
+}
+
+void QPlayer::onGameStart(std::shared_ptr<QJsonRequest> req)
+{
+    if (!game)
+    {
+        req->sendResponse(Response::FAILED);
+        return;
+    }
+
+    if (!game->start())
+    {
+        req->sendResponse(Response::FAILED);
+        return;
+    }
+
+
+    req->sendResponse(Response::OK);
 }
 
 void QPlayer::onMessage(const QVariant &messageData)

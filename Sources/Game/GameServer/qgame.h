@@ -30,7 +30,7 @@ public:
     bool join(QPlayer* player);
     void leave(QPlayer* player);
     void command(QPlayer* player, const QString& command);
-    void start();
+    bool start();
 
 
     void writeInfo(QGameInfo& info) const;
