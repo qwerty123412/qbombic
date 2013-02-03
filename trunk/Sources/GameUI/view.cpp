@@ -273,13 +273,12 @@ bool KAsteroidsView::readSprites()
     m_player = new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), 2*TILE_SIZE, 2*TILE_SIZE);
     m_players.push_back(m_player);
 
-    //TODO: do it otherway
-    m_players.push_back(new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), 2*TILE_SIZE, 2*TILE_SIZE, this));
+    //--T-O-D-O--: do it otherway
+    //m_players.push_back(new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), 2*TILE_SIZE, 2*TILE_SIZE, this));
 
-    /*
-    ship = new AnimatedPixmapItem( animation[B_PINGU], &field );
-    ship->hide();    
-    */
+    //UPDATE: now this can done using create_character method that returns Character*
+    //        you can do things such us following
+    qDebug() << create_character()->set_id(3)->setXY(200, 200)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X);
 
     return (!m_player->getCharacterSprite()->image(0).isNull());
 }
@@ -306,6 +305,12 @@ void KAsteroidsView::showText( const QString &text, const QColor &color, bool sc
 	textDy = 0;
     }
     textSprite->show();
+}
+
+Character* KAsteroidsView::create_character() {
+    Character* temp = new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), 2*TILE_SIZE, 2*TILE_SIZE, this);
+    m_players.push_back(temp);
+    return temp;
 }
 
 // - - -

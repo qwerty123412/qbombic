@@ -20,10 +20,12 @@ int Character::getY() {
     return m_pos_y;
 }
 
-void Character::setXY(int x, int y) {
+Character* Character::setXY(int x, int y) {
     m_pos_x = x;
     m_pos_y = y;
     m_character_sprite->setPos(m_pos_x, m_pos_y);
+
+    return this;
 }
 
 AnimatedPixmapItem* Character::getCharacterSprite() {

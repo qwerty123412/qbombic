@@ -14,7 +14,7 @@ public:
     int getX();
     int getY();
     AnimatedPixmapItem* getCharacterSprite();
-    void setXY(int x, int y);
+    Character* setXY(int x, int y);
 
     int getUpperLeftQuadrant(int tile_size, int speed, int level_tiles_x);
     int getLowerLeftQuadrant(int tile_size, int speed, int level_tiles_x);
@@ -26,8 +26,10 @@ public:
     bool can_laid_bomb() { return m_max_bombs > m_bomb_count ? true : false; }
     void bomb_laid() { m_bomb_count++; }
     void bomb_exploded() { m_bomb_count--; }
-    void set_bomb_limit(int limit) { m_max_bombs = limit; }
+    void set_bomb_limit(int limit) { m_max_bombs = limit; }    
+
     int get_id() { return m_id; }
+    Character* set_id(int id) { m_id = id; return this; }
 
     void set_last_bomb(Bomb* bomb) { m_last_bomb = bomb; }
     Bomb* get_last_bomb() { return m_last_bomb; }
