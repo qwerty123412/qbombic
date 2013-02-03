@@ -3,6 +3,7 @@
 QPlayerInfo::QPlayerInfo(QObject *parent) :
     QObject(parent)
 {
+    qRegisterMetaType<QPlayerInfo>("QPlayerInfo");
 }
 
 QPlayerInfo::QPlayerInfo(const QPlayerInfo& another) :

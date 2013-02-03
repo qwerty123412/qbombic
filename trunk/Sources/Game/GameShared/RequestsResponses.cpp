@@ -6,6 +6,7 @@ const QString Response::FAILED = "FAILED";
 
 const QString Request::LOGIN = "LOGIN";
 const QString Request::GET_PLAYERS = "GET_PLAYERS";
+const QString Request::GET_GAMES = "GET_GAMES";
 const QString Request::CREATE_GAME = "CREATE_GAME";
 const QString Request::JOIN_GAME = "JOIN_GAME";
 const QString Request::START_GAME = "START_GAME";

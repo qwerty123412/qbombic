@@ -27,11 +27,13 @@ public:
     void onLogin(std::shared_ptr<QJsonRequest> request);
 //    void onGetPlayers(std::shared_ptr<QJsonRequest> request);
     QList<QPlayer*> getPlayers() const { return players.values(); }
+    QList<QGame*> getGames() const { return games.values(); }
 
     QGame* createGame(QPlayer* player, const QString& name);
     QGame* getGame(const QString& name);
     void closeGame(QPlayer* player);
 
+    QVariantList getGameList() const;
     void gameListChanged();
 
 signals:

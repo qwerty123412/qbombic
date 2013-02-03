@@ -38,15 +38,26 @@ public slots:
     void exitClick();
     void startClick();
     void refreshPlayerList();
+    void refreshGameList(const QString&, const QVariant& data);
     void gameEnded();
 
     void createGame();
-    
+    void leaveGame();
+
+    void gameSelected(QModelIndex index);
+
+    void setPlayerName(const QString& name) { playerName = name; }
+    const QString& getPlayerName() const { return playerName; }
+
+    const QString& getGameName() const { return gameName; }
+
+
 private:
     Ui::MainWindow *ui;
     std::shared_ptr<QJsonCommunication> comm;
     bool exitApp;
     QString gameName;
+    QString playerName;
     QGame* gameObject;
 };
 

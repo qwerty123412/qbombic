@@ -6,7 +6,7 @@
 QGame::QGame(QObject *parent) :
     QObject(parent)
 {
-    main = (MainWindow*)parent;
+    main = static_cast<MainWindow*>(parent);
     view = window.getView();
     connect(&sendTimer, SIGNAL(timeout()), SLOT(onTick()));
 
@@ -16,6 +16,16 @@ QGame::QGame(QObject *parent) :
             QJson::QObjectHelper::qvariant2qobject(message.toMap(), &state);
             view->getPlayers().at(1)->setXY(state.getPlayerPosX(), state.getPlayerPosY());
     });
+    connect(&window, SIGNAL(destroyed()), main, SLOT(leaveGame()));
+
+    window.setWindowTitle("Playground " + main->getGameName() + " [" + main->getPlayerName() + "]");
+}
+
+QGame::~QGame()
+{
+    window.close();
+    sendTimer.stop();
+    main->getComm()->clearNotification(Notifications::GAME_STATE);
 }
 
 void QGame::start()

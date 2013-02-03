@@ -63,9 +63,9 @@ void QGameServer::onDisconnected(QJsonCommunication& comm)
     qDebug() << "Disconnected... ";
 
     QPlayer* player = players[&comm];
+    players.remove(&comm);
     if (player != nullptr)
     {
-        players.remove(&comm);
         QPlayerInfo info;
         player->writeInfo(info);
         broadcastNotification(Notifications::QUIT_PLAYER, QJson::QObjectHelper::qobject2qvariant(&info));
@@ -86,9 +86,21 @@ void QGameServer::onLogin(std::shared_ptr<QJsonRequest> request)
         return;
     }
     QString name = extractQVariantItem(request, "name");
+    for (QPlayer* player : players.values())// check for existing nicknames
+    {
+        if (player->getName() == name)
+        {
+            request->sendResponse(Response::FAILED);
+            return;
+        }
+    }
+    /*
+    // Response have to be send before sending game list -
+    // it is necessary to register notification on client side
+    */
+    request->sendResponse(Response::OK);
     QPlayer* player = new QPlayer(this, comm, name);
 
-    request->sendResponse(Response::OK);
     QPlayerInfo info;
     player->writeInfo(info);
     broadcastNotification(Notifications::NEW_PLAYER, QJson::QObjectHelper::qobject2qvariant(&info));
@@ -109,18 +121,20 @@ QGame* QGameServer::createGame(QPlayer *player, const QString &name)
 
     QGame* ret = new QGame(this, name, player);
     games.insert(name, ret);
-
+    gameListChanged();
     return ret;
 }
 
 void QGameServer::closeGame(QPlayer *player)
 {
+    if (!player->getGame() || player->getGame()->getCreator() != player)// close only if player is also creatro
+        return;
     games.remove(player->getGame()->getName());
     delete player->getGame();
     gameListChanged();
 }
 
-void QGameServer::gameListChanged()
+QVariantList QGameServer::getGameList() const
 {
     QGameInfo info;
     QVariantList infos;
@@ -129,7 +143,12 @@ void QGameServer::gameListChanged()
         game->writeInfo(info);
         infos << QJson::QObjectHelper::qobject2qvariant(&info);
     }
-    broadcastNotification(Notifications::GAME_LIST, infos);
+    return infos;
+}
+
+void QGameServer::gameListChanged()
+{
+    broadcastNotification(Notifications::GAME_LIST, getGameList());
 }
 
 QGame* QGameServer::getGame(const QString &name)

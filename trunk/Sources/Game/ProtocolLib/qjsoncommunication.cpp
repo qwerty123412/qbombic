@@ -153,12 +153,12 @@ void QJsonCommunication::registerNotification(const QString &req, std::function<
     notificationCallbacks.insert(req, callback);
 }
 
-void QJsonCommunication::clearRequests(const QString &req)
+void QJsonCommunication::clearRequest(const QString &req)
 {
     requestCallbacks.remove(req);
 }
 
-void QJsonCommunication::clearNotifications(const QString &notif)
+void QJsonCommunication::clearNotification(const QString &notif)
 {
     notificationCallbacks.remove(notif);
 }

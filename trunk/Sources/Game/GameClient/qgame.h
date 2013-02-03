@@ -15,6 +15,7 @@ class QGame : public QObject
     Q_OBJECT
 public:
     explicit QGame(QObject *parent = 0);
+    ~QGame();
     
     void start();
 signals:
