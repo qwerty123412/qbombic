@@ -61,6 +61,7 @@
 #include "bomb.h"
 #include "explosion.h"
 #include "character.h"
+#include "powerup.h"
 
 #define MAX_POWER_LEVEL          1000
 
@@ -112,8 +113,10 @@ protected:
     void processChar();
     void processBombs();
     void processDeaths();
+    void processPowerups();
 
     Character* create_character();
+    Powerup* create_powerup();
 
     double randDouble();
     int randInt( int range );
@@ -127,13 +130,7 @@ private:
     QGraphicsScene field;
     QGraphicsView view;
     QMap<int, QList<QPixmap> > animation;
-    QList<AnimatedPixmapItem*> rocks;
-    QList<KMissile*> missiles;
-    QList<KBit*> bits;
-    QList<KExhaust*> exhaust;
-    QList<KPowerup*> powerups;
-    KShield *shield;
-    AnimatedPixmapItem *ship;
+
     QGraphicsTextItem *textSprite;
 
     //new
@@ -143,8 +140,8 @@ private:
 
     QList<Bomb*> m_bombs;
     QList<Explosion*> m_explosions;
-
     QList<Character*> m_players;
+    QList<Powerup*> m_powerups;
 
     Character* m_player;
 
