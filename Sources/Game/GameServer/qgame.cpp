@@ -9,24 +9,19 @@
 QGame::QGame(QGameServer *server, const QString &name, QPlayer *creator, QObject *parent) :
     QObject(parent), server(server), comm(creator->getComm()), name(name), creator(creator), members(), maximum(6)
 {
+    members.insert(creator);
 }
 QGame::~QGame()
 {
+    broadcastNotification(creator, Notifications::GAME_CLOSED);
     for(QPlayer* player : members)
     {
-        player->getComm()->sendNotification(Notifications::GAME_CLOSED);
         player->gameQuit();
     }
 }
 
 void QGame::writeInfo(QGameInfo &info) const
 {
-    /*QPlayerInfo playerInfo;
-    QList<QString> _members;
-    for( QPlayer* player : members )
-    {
-        _members.push_back(player->getName());
-    }*/
     info.setPlayers(members.count());
     info.setCreator(creator->getName());
 
@@ -46,7 +41,7 @@ void QGame::broadcastNotification(const QPlayer *except, const QString &notif, c
 
 bool QGame::join(QPlayer *player)
 {
-    if (members.size() >= 6)
+    if (members.size() >= maximum)
         return false;
     members.insert(player);
     server->gameListChanged();
@@ -66,10 +61,7 @@ void QGame::command(QPlayer *player, const QString &command)
 
 bool QGame::start()
 {
-    for(QPlayer* player : members)
-    {
-        player->getComm()->sendNotification(Notifications::GAME_STARTED);
-    }
-
+    broadcastNotification(nullptr, Notifications::GAME_STARTED);
     return true;
 }
+

@@ -66,6 +66,9 @@ void LoginDialog::loginContinue()
     finishedSuccesfully = true;
 
     close();
+    QString name = this->ui->lineEditName->text();
+    mainWindow->setWindowTitle("QBombic lobby [" + name + "]");
+    mainWindow->setPlayerName(name);
     mainWindow->show();
 }
 

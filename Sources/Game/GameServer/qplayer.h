@@ -28,6 +28,7 @@ public:
     void writeInfo(QPlayerInfo& info) const;
 
     void onGetPlayerList(std::shared_ptr<QJsonRequest> req);
+    void onGetGameList(std::shared_ptr<QJsonRequest> req);
 
     void onGameStart(std::shared_ptr<QJsonRequest> req);
     void onGameCreate(std::shared_ptr<QJsonRequest> req);

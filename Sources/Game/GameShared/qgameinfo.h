@@ -5,6 +5,7 @@
 #include <QtCore/QMetaType>
 #include <QObject>
 #include <qplayerinfo.h>
+#include <QVariantList>
 
 class QGameInfo : public QObject
 {
@@ -12,7 +13,6 @@ class QGameInfo : public QObject
 
     Q_PROPERTY(QString name READ getName WRITE setName)
     Q_PROPERTY(QString creator READ getCreator WRITE setCreator)
-    //Q_PROPERTY(QList<QString> members READ getMembers WRITE setMembers)
     Q_PROPERTY(int players READ getPlayers WRITE setPlayers)
 
 public:
@@ -29,11 +29,6 @@ public:
     int getPlayers() const { return players; }
     void setPlayers(int _players) { players = _players; }
 
-    //const QList<QString>& getMembers() const { return members; }
-    //void setMembers(const QList<QString>& list) { members = list; }
-
-    //typename QList<QString>::size_type getCount() const { return members.size(); }
-
 signals:
 
 public slots:
@@ -48,3 +43,4 @@ private:
 Q_DECLARE_METATYPE(QGameInfo)
 
 #endif // QGAMEINFO_H
+

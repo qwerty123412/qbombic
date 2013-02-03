@@ -28,8 +28,8 @@ public:
     void registerRequest(const QString& req, std::function<void(std::shared_ptr<QJsonRequest>)> callback);
     void registerNotification(const QString& notif, std::function<void(const QVariant&)> callback);
 
-    void clearRequests(const QString& req);
-    void clearNotifications(const QString& notif);
+    void clearRequest(const QString& req);
+    void clearNotification(const QString& notif);
 
     std::weak_ptr<QJsonCommunication> getThis() { return _this; }
     void setThis(std::weak_ptr<QJsonCommunication> val) { _this = val; }

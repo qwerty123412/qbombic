@@ -27,6 +27,7 @@ struct Request
 {
     static const QString LOGIN;//send client
     static const QString GET_PLAYERS;//send client
+    static const QString GET_GAMES;//send client
     static const QString CREATE_GAME;//send client
     static const QString JOIN_GAME;//send client
     static const QString START_GAME;//send client
@@ -41,7 +42,7 @@ struct Notifications
     static const QString GAME_LIST;//send server
     static const QString MESSAGE;//send client (outgoing) & server (incoming)
     static const QString QUIT_GAME;//send client
-    static const QString GAME_STATE; //oba
+    static const QString GAME_STATE; //both
 };
 
 #endif // REQUESTSRESPONSES_H

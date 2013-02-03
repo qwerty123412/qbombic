@@ -17,14 +17,14 @@ QPlayer::QPlayer(QGameServer* server, QJsonCommunication *comm, const QString na
     comm->registerRequest(Request::CREATE_GAME, std::bind(&QPlayer::onGameCreate, this, _1));
     comm->registerRequest(Request::JOIN_GAME, std::bind(&QPlayer::onGameJoin, this, _1));
     comm->registerRequest(Request::START_GAME, std::bind(&QPlayer::onGameStart, this, _1));
+    comm->registerRequest(Request::GET_GAMES, std::bind(&QPlayer::onGetGameList, this, _1));
+
 }
 
 QPlayer::~QPlayer()
 {
     if (game)
-    {
-        server->closeGame(this);
-    }
+        onGameLeave(QVariant());
 }
 
 void QPlayer::onGetPlayerList(std::shared_ptr<QJsonRequest> request)
@@ -87,8 +87,6 @@ void QPlayer::onGameCreate(std::shared_ptr<QJsonRequest> req)
         return;
     }
 
-    g->join(this);
-
     game = g;
     req->sendResponse(Response::OK);
 }
@@ -96,6 +94,7 @@ void QPlayer::onGameCreate(std::shared_ptr<QJsonRequest> req)
 void QPlayer::onGameJoin(std::shared_ptr<QJsonRequest> req)
 {
     QGame* g = server->getGame(extractQVariantItem(req, "name"));
+
     if (!g || !g->join(this))
     {
         req->sendResponse(Response::FAILED);
@@ -103,17 +102,19 @@ void QPlayer::onGameJoin(std::shared_ptr<QJsonRequest> req)
     }
     game = g;
     req->sendResponse(Response::OK);
-    emit server->gameListChanged();
+    server->gameListChanged();
 }
 
 void QPlayer::onGameLeave(const QVariant &)
 {
+    if (!game)
+        return;
     if (game->getCreator() == this)
         server->closeGame(this);
     else
         game->leave(this);
     game = nullptr;
-    emit server->gameListChanged();
+    server->gameListChanged();
 }
 
 void QPlayer::onGameCommand(const QVariant &command)
@@ -124,16 +125,13 @@ void QPlayer::onGameCommand(const QVariant &command)
 void QPlayer::onGameState(const QVariant &state)
 {
     if (game)
-    {
         game->broadcastNotification(nullptr, Notifications::GAME_STATE, state);
-    }
 }
 
-/*
-void onGameCommand(const QVariant& command);//just notification
-*/
-
-
+void QPlayer::onGetGameList(std::shared_ptr<QJsonRequest> req)
+{
+    req->sendResponse(Response::OK, server->getGameList());
+}
 
 
 
