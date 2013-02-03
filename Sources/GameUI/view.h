@@ -113,6 +113,8 @@ protected:
     void processBombs();
     void processDeaths();
 
+    Character* create_character();
+
     double randDouble();
     int randInt( int range );
 
