@@ -162,23 +162,26 @@ KAsteroidsView::KAsteroidsView( QWidget *parent)
 
 KAsteroidsView::~KAsteroidsView()
 {    
+    /*
     qDeleteAll(rocks);     rocks.clear();
     qDeleteAll(missiles);  missiles.clear();
     qDeleteAll(bits);      bits.clear();
     qDeleteAll(powerups);  powerups.clear();
     qDeleteAll(exhaust);   exhaust.clear();
+    */
 }
 
 void KAsteroidsView::reset()
 {
     if ( !initialized )
 	return;    
+    /*
     qDeleteAll(rocks);      rocks.clear();
     qDeleteAll(missiles);   missiles.clear();
     qDeleteAll(bits);       bits.clear();
     qDeleteAll(powerups);   powerups.clear();
     qDeleteAll(exhaust);    exhaust.clear();
-
+    */
     mFrameNum = 0;
     mPaused = FALSE;
 
@@ -201,11 +204,13 @@ void KAsteroidsView::newGame()
 
 void KAsteroidsView::endGame()
 {
+    /*
     qDeleteAll(rocks);     rocks.clear();
     qDeleteAll(missiles);  missiles.clear();
     qDeleteAll(bits);      bits.clear();
     qDeleteAll(powerups);  powerups.clear();
     qDeleteAll(exhaust);   exhaust.clear();
+    */
 }
 
 void KAsteroidsView::pause( bool p )
@@ -280,6 +285,8 @@ bool KAsteroidsView::readSprites()
     //        you can do things such us following
     qDebug() << create_character()->set_id(3)->setXY(200, 200)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X);
 
+    create_powerup();
+
     return (!m_player->getCharacterSprite()->image(0).isNull());
 }
 
@@ -313,14 +320,24 @@ Character* KAsteroidsView::create_character() {
     return temp;
 }
 
-// - - -
+Powerup* KAsteroidsView::create_powerup() {
+    Powerup* temp = new Powerup(new AnimatedPixmapItem( animation[B_BOMB], &field ), this);
+    for(;;) {
+        int rand_quadrant = (qrand() % LEVEL_TILES_Y) * LEVEL_TILES_X + qrand() % LEVEL_TILES_X;
+        if( m_level_data[ rand_quadrant ] == 0) {
+            temp->setXY( (rand_quadrant%LEVEL_TILES_X)*TILE_SIZE, floor(rand_quadrant/LEVEL_TILES_X)*TILE_SIZE);
+            m_level_data[ rand_quadrant ] = 2;
+            m_powerups.push_back(temp);
+            break;
+        }
+    }
+    return temp;
+}
 
 void KAsteroidsView::hideText()
 {
     textDy = -TEXT_SPEED;
 }
-
-// - - -
 
 void KAsteroidsView::resizeEvent(QResizeEvent* event)
 {
@@ -329,8 +346,6 @@ void KAsteroidsView::resizeEvent(QResizeEvent* event)
     view.resize(width(),height());
 }
 
-// - - -
-
 void KAsteroidsView::timerEvent( QTimerEvent * )
 {
     field.advance();
@@ -338,6 +353,7 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
     processBombs();
     processDeaths();
     processChar();    
+    processPowerups();
 
     if ( textSprite->isVisible() )
     {
@@ -350,6 +366,10 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
 
 	if ( textSprite->sceneBoundingRect().y() > (field.height()-textSprite->boundingRect().height())/2 )
 	    textDy = 0;
+    }
+
+    if(mFrameNum % (FPS*10) == 0) {
+        create_powerup();
     }
 
     mFrameNum++;
@@ -391,8 +411,6 @@ bool KAsteroidsView::check_explosion_placement_possibility(int pos_x, int pos_y)
     return true;
 }
 
-// - - -
-
 void KAsteroidsView::processBombs()
 {    
     QList<Bomb*>::Iterator it;
@@ -404,11 +422,7 @@ void KAsteroidsView::processBombs()
             m_bombs.removeAt(0);
 
             m_level_data[ (temp->getY()/TILE_SIZE) * LEVEL_TILES_X + (temp->getX() / TILE_SIZE) ] = 0;
-/*
-            if(m_player->get_last_bomb()->get_bomb_id() == temp->get_bomb_id()) {
-                m_player->set_last_bomb(NULL);
-            }
-*/
+
             m_explosions.push_back(new Explosion(new AnimatedPixmapItem( animation[B_EXPLOSION], &field ),
                                        temp->getX(),
                                        temp->getY(),
@@ -519,7 +533,7 @@ void KAsteroidsView::processChar()
                 && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] < 10)
                 || (m_level_data[ m_player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 10
                     && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + t_speed)/TILE_SIZE) ] <11
-                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] <1)) {
+                    && m_level_data[ floor( (m_player->getX() + m_player->getCharacterSprite()->boundingRect().width() + t_speed)/TILE_SIZE) + LEVEL_TILES_X * floor((m_player->getY() + m_player->getCharacterSprite()->boundingRect().height() - t_speed)/TILE_SIZE) ] <11)) {
             m_player->setXY(m_player->getX() + t_speed, m_player->getY());
         }
         else {
@@ -583,6 +597,28 @@ void KAsteroidsView::processDeaths() {
     for(character_it = m_players.begin(); character_it != m_players.end(); character_it++) {
         if(m_level_data[ (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X) ] == 1) {
             (*character_it)->setXY(TILE_SIZE, TILE_SIZE);
+        }
+    }
+}
+
+void KAsteroidsView::processPowerups() {
+    QList<Character*>::Iterator character_it;
+    for(character_it = m_players.begin(); character_it != m_players.end(); character_it++) {
+        if(m_level_data[ (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X) ] == 2) {
+
+            (*character_it)->raise_bomb_limit();
+            m_level_data[ (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X) ] = 0;
+
+            QList<Powerup*>::Iterator powerup_it;
+            for(powerup_it = m_powerups.begin(); powerup_it != m_powerups.end(); powerup_it++) {
+                if((*powerup_it)->get_quadrant(TILE_SIZE, LEVEL_TILES_X) == (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)) {
+                    Powerup* temp = (*powerup_it);
+                    m_powerups.swap(0, m_powerups.indexOf(*powerup_it));
+                    m_powerups.removeAt(0);
+                    delete temp;
+                }
+            }
+
         }
     }
 }

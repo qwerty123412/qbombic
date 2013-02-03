@@ -12,14 +12,6 @@ Character::Character(AnimatedPixmapItem *character_sprite, int pos_x, int pos_y,
     m_id = qrand() % 10000;
 }
 
-int Character::getX() {
-    return m_pos_x;
-}
-
-int Character::getY() {
-    return m_pos_y;
-}
-
 Character* Character::setXY(int x, int y) {
     m_pos_x = x;
     m_pos_y = y;
