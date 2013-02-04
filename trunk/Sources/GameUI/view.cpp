@@ -93,10 +93,12 @@ static struct
 }
 kas_animations [] =
 {    
-    { B_WALL, "wall_sprite_smaller.png", 1 },
+    //{ B_WALL, "wall_sprite_smaller.png", 1 },
+    { B_WALL, "wall%1.png", 1 },
     { B_BOMB, "bomb_smaller%1.png", 4 },
     { B_EXPLOSION, "explosion_smaller%1.png", 2 },
     { B_PINGU, "pingu.png", 1 },
+    { B_CRATE, "crate%1.png", 1 },
     { 0,                   0,                          0 }
 };
 
@@ -285,7 +287,9 @@ bool KAsteroidsView::readSprites()
     //        you can do things such us following
     qDebug() << create_character()->set_id(3)->setXY(200, 200)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X);
 
-    create_powerup();
+    //create_powerup();
+    for(int i = 0; i < 100; i++)
+        create_block();
 
     return (!m_player->getCharacterSprite()->image(0).isNull());
 }
@@ -334,6 +338,20 @@ Powerup* KAsteroidsView::create_powerup() {
     return temp;
 }
 
+Block* KAsteroidsView::create_block() {
+    Block* temp = new Block(new AnimatedPixmapItem( animation[B_CRATE], &field ), this);
+    for(;;) {
+        int rand_quadrant = (qrand() % LEVEL_TILES_Y) * LEVEL_TILES_X + qrand() % LEVEL_TILES_X;
+        if( m_level_data[ rand_quadrant ] == 0) {
+            temp->setXY( (rand_quadrant%LEVEL_TILES_X)*TILE_SIZE, floor(rand_quadrant/LEVEL_TILES_X)*TILE_SIZE);
+            m_level_data[ rand_quadrant ] = 11;
+            m_blocks.push_back(temp);
+            break;
+        }
+    }
+    return temp;
+}
+
 void KAsteroidsView::hideText()
 {
     textDy = -TEXT_SPEED;
@@ -354,6 +372,13 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
     processDeaths();
     processChar();    
     processPowerups();
+    processBlocks();
+
+    if(mFrameNum % (FPS*30) == 0) {
+        create_powerup();
+    }
+
+    // ----
 
     if ( textSprite->isVisible() )
     {
@@ -366,11 +391,7 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
 
 	if ( textSprite->sceneBoundingRect().y() > (field.height()-textSprite->boundingRect().height())/2 )
 	    textDy = 0;
-    }
-
-    if(mFrameNum % (FPS*10) == 0) {
-        create_powerup();
-    }
+    }    
 
     mFrameNum++;
 }
@@ -619,6 +640,18 @@ void KAsteroidsView::processPowerups() {
                 }
             }
 
+        }
+    }
+}
+
+void KAsteroidsView::processBlocks() {
+    QList<Block*>::Iterator block_it;
+    for(block_it = m_blocks.begin(); block_it != m_blocks.end(); block_it++) {
+        if(m_level_data[ (*block_it)->get_quadrant(TILE_SIZE, LEVEL_TILES_X) ] == 0) {
+            Block* temp = (*block_it);
+            m_blocks.swap(0, m_blocks.indexOf(*block_it));
+            m_blocks.removeAt(0);
+            delete temp;
         }
     }
 }

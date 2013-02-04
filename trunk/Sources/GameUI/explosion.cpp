@@ -21,6 +21,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, 1, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor(pos_x/tile_size) + level_width * floor((pos_y - tile_size)/tile_size) ] = 1;
+        } else if((*level_data)[ floor(pos_x/tile_size) + level_width * floor((pos_y - tile_size)/tile_size) ] == 11) {
+            (*level_data)[ floor(pos_x/tile_size) + level_width * floor((pos_y - tile_size)/tile_size) ] = 0;
         }
 
         if((*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] < 11) {
@@ -30,6 +32,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, 2, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 1;
+        } else if((*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] == 11) {
+            (*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 0;
         }
 
         if((*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] < 11) {
@@ -39,6 +43,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, 3, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] = 1;
+        } else if((*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] == 11) {
+            (*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] = 0;
         }
 
         if((*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] < 11) {
@@ -48,6 +54,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, 4, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 1;
+        } else if((*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] == 11) {
+            (*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 0;
         }
     } else if(direction == 1 && range > 0) {
         if((*level_data)[ floor(pos_x/tile_size) + level_width * floor((pos_y - tile_size)/tile_size) ] < 11) {
@@ -57,6 +65,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, direction, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor(pos_x/tile_size) + level_width * floor((pos_y - tile_size)/tile_size) ] = 1;
+        } else if((*level_data)[ floor(pos_x/tile_size) + level_width * floor((pos_y - tile_size)/tile_size) ] == 11) {
+            (*level_data)[ floor(pos_x/tile_size) + level_width * floor((pos_y - tile_size)/tile_size) ] = 0;
         }
     } else if(direction == 2 && range > 0) {
         if((*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] < 11) {
@@ -66,6 +76,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, 2, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 1;
+        } else if((*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] == 11) {
+            (*level_data)[ floor( (pos_x + tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 0;
         }
     } else if(direction == 3 && range > 0) {
         if((*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] < 11) {
@@ -75,6 +87,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, 3, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] = 1;
+        } else if((*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] == 11) {
+            (*level_data)[ floor( (pos_x) /tile_size) + level_width * floor((pos_y + tile_size)/tile_size) ] = 0;
         }
     } else if(direction == 4 && range > 0) {
         if((*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] < 11) {
@@ -84,6 +98,8 @@ Explosion::Explosion(AnimatedPixmapItem *bomb,
                                    explosions,
                                    ttl, type, 4, range-1, tile_size, level_data, level_width, bombs))->set_bomb_ownership(this->get_bomb_ownership()));
             (*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 1;
+        } else if((*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] == 11) {
+            (*level_data)[ floor( (pos_x - tile_size)/tile_size) + level_width * floor((pos_y)/tile_size) ] = 0;
         }
     }
 }

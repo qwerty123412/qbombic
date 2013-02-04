@@ -11,13 +11,15 @@ HEADERS += ledmeter.h sprites.h toplevel.h view.h animateditem.h \
     explosion.h \
     character.h \
     gameuiconstants.h \
-    powerup.h
+    powerup.h \
+    block.h
 SOURCES += ledmeter.cpp main.cpp toplevel.cpp view.cpp animateditem.cpp \
     bomb.cpp \
     explosion.cpp \
     character.cpp \
     gameuiconstants.cpp \
-    powerup.cpp
+    powerup.cpp \
+    block.cpp
 
 QMAKE_CXXFLAGS += -std=c++0x
 
