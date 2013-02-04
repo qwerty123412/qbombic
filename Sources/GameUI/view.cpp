@@ -614,46 +614,46 @@ void KAsteroidsView::processChar()
 }
 
 void KAsteroidsView::processDeaths() {
-    QList<Character*>::Iterator character_it;
-    for(character_it = m_players.begin(); character_it != m_players.end(); character_it++) {
-        if(m_level_data[ (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X) ] == 1) {
-            (*character_it)->setXY(TILE_SIZE, TILE_SIZE);
-        }
+    for (Character* player : m_players)
+    {
+        if (m_level_data[player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 1)
+            player->setXY(TILE_SIZE, TILE_SIZE);
     }
 }
 
 void KAsteroidsView::processPowerups() {
-    QList<Character*>::Iterator character_it;
-    for(character_it = m_players.begin(); character_it != m_players.end(); character_it++) {
-        if(m_level_data[ (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X) ] == 2) {
+    for (Character* player : m_players)
+    {
+        if (m_level_data[player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] == 2)
+        {
+            player->raise_bomb_limit();
+            m_level_data[player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)] = 0;
 
-            (*character_it)->raise_bomb_limit();
-            m_level_data[ (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X) ] = 0;
-
-            QList<Powerup*>::Iterator powerup_it;
-            for(powerup_it = m_powerups.begin(); powerup_it != m_powerups.end(); powerup_it++) {
-                if((*powerup_it)->get_quadrant(TILE_SIZE, LEVEL_TILES_X) == (*character_it)->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X)) {
-                    Powerup* temp = (*powerup_it);
-                    m_powerups.swap(0, m_powerups.indexOf(*powerup_it));
+            for (Powerup* powUp : m_powerups)
+            {
+                if (powUp->get_quadrant(TILE_SIZE, LEVEL_TILES_X) == player->get_quadrant_character_center(TILE_SIZE, LEVEL_TILES_X))
+                {
+                    m_powerups.swap(0, m_powerups.indexOf(powUp));
                     m_powerups.removeAt(0);
-                    delete temp;
+                    delete powUp;
                 }
             }
-
         }
     }
 }
 
 void KAsteroidsView::processBlocks() {
-    QList<Block*>::Iterator block_it;
-    for(block_it = m_blocks.begin(); block_it != m_blocks.end(); block_it++) {
-        if(m_level_data[ (*block_it)->get_quadrant(TILE_SIZE, LEVEL_TILES_X) ] == 0) {
-            Block* temp = (*block_it);
-            m_blocks.swap(0, m_blocks.indexOf(*block_it));
+
+    for(Block* block : m_blocks)
+    {
+        if (m_level_data[block->get_quadrant(TILE_SIZE, LEVEL_TILES_X)] == 0)
+        {
+            m_blocks.swap(0, m_blocks.indexOf(block));
             m_blocks.removeAt(0);
-            delete temp;
+            delete block;
         }
     }
+
 }
 
 double KAsteroidsView::randDouble()

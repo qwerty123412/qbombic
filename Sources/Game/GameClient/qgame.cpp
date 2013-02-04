@@ -14,11 +14,11 @@ QGame::QGame(QObject *parent) :
     {
             QGameState state;
             QJson::QObjectHelper::qvariant2qobject(message.toMap(), &state);
-            view->getPlayers().at(1)->setXY(state.getPlayerPosX(), state.getPlayerPosY());
+            view->getPlayers().last()->setXY(state.getPlayerPosX(), state.getPlayerPosY());
     });
     connect(&window, SIGNAL(destroyed()), main, SLOT(leaveGame()));
 
-    window.setWindowTitle("Playground " + main->getGameName() + " [" + main->getPlayerName() + "]");
+    window.setWindowTitle("Bombi " + main->getGameName() + " [" + main->getPlayerName() + "]");
 }
 
 QGame::~QGame()
