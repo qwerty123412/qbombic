@@ -62,6 +62,7 @@
 #include "explosion.h"
 #include "character.h"
 #include "powerup.h"
+#include "block.h"
 
 #define MAX_POWER_LEVEL          1000
 
@@ -114,9 +115,11 @@ protected:
     void processBombs();
     void processDeaths();
     void processPowerups();
+    void processBlocks();
 
     Character* create_character();
     Powerup* create_powerup();
+    Block* create_block();
 
     double randDouble();
     int randInt( int range );
@@ -142,6 +145,7 @@ private:
     QList<Explosion*> m_explosions;
     QList<Character*> m_players;
     QList<Powerup*> m_powerups;
+    QList<Block*> m_blocks;
 
     Character* m_player;
 

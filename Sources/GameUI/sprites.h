@@ -75,6 +75,7 @@
 #define B_BOMB                  7002
 #define B_EXPLOSION             7003
 #define B_PINGU                 7004
+#define B_CRATE                 7005
 
 class KMissile : public AnimatedPixmapItem
 {
