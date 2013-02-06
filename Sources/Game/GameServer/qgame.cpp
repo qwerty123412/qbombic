@@ -51,7 +51,7 @@ void QGame::writeInfo(QGameInfo &info) const
 {
     info.setPlayers(members.count());
     info.setCreator(creator->getName());
-
+    info.setStarted(started);
     info.setName(name);
 }
 

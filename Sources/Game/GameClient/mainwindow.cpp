@@ -70,14 +70,20 @@ void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
         gameObject = new QGame(this);
         connect(gameObject, SIGNAL(ended()), SLOT(gameEnded()));
         gameObject->start();
+        gameStarted = true;
     });
     comm->registerNotification(Notifications::GAME_CLOSED, [this](const QVariant&)
     {
         this->ui->textBrowserChat->append("![Game was closed.]");
         this->ui->pushButtonLeaveGame->setEnabled(false);
         this->ui->pushButtonNewGame->setEnabled(true);
+        this->ui->pushButtonNewGame->setText("Start");
         this->ui->pushButtonStart->setEnabled(false);
         this->ui->listViewGames->setEnabled(true);
+        gameEnded();
+    });
+    comm->registerNotification(Notifications::GAME_STOPPED, [this](const QVariant&)
+    {
         gameEnded();
     });
     refreshPlayerList();
@@ -89,6 +95,7 @@ void MainWindow::gameEnded()
     delete gameObject;
     gameObject = nullptr;
     gameName = nullptr;
+    gameStarted = false;
 }
 
 void MainWindow::onSocketError(QJsonCommunication&, QAbstractSocket::SocketError)
@@ -119,18 +126,26 @@ void MainWindow::exitClick()
 
 void MainWindow::startClick()
 {
-    this->ui->pushButtonStart->setEnabled(false);
-    comm->sendRequest(Request::START_GAME, QVariant(), [this](const QString& resp, const QVariant&)
+    if (gameStarted)
     {
-        if (resp != Response::OK)
+        this->ui->pushButtonStart->setText("Start");
+        comm->sendNotification(Notifications::GAME_STOPPED);
+    }
+    else
+    {
+        this->ui->pushButtonStart->setText("Stop");
+        comm->sendRequest(Request::START_GAME, QVariant(), [this](const QString& resp, const QVariant&)
         {
-            this->ui->textBrowserChat->append("![Game was not started.]");
-            this->ui->pushButtonStart->setEnabled(true);
-            return;
-        }
+            if (resp != Response::OK)
+            {
+                this->ui->textBrowserChat->append("![Game was not started.]");
+                this->ui->pushButtonStart->setEnabled(true);
+                return;
+            }
+            this->ui->textBrowserChat->append("![Game was started.]");
+        });
 
-        this->ui->textBrowserChat->append("![Game was started.]");
-    });
+    }
 }
 void MainWindow::refreshGameList(const QString &, const QVariant &data)
 {
@@ -211,6 +226,7 @@ void MainWindow::createGame()
         this->ui->textBrowserChat->append("![Game was created.]");
         this->ui->listViewGames->setEnabled(false);
         this->ui->pushButtonStart->setEnabled(true);
+        this->ui->pushButtonStart->setText("Start");
         this->ui->pushButtonNewGame->setEnabled(false);
         this->ui->pushButtonLeaveGame->setEnabled(true);
     });

@@ -21,7 +21,8 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     logindialog.h \
-    qgame.h
+    qgame.h \
+    qcharacter.h
 
 FORMS    += mainwindow.ui \
     logindialog.ui
