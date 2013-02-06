@@ -59,6 +59,7 @@ private:
     QString gameName;
     QString playerName;
     QGame* gameObject;
+    bool gameStarted;
 };
 
 #endif // MAINWINDOW_H

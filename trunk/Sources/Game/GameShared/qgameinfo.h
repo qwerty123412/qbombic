@@ -14,6 +14,7 @@ class QGameInfo : public QObject
     Q_PROPERTY(QString name READ getName WRITE setName)
     Q_PROPERTY(QString creator READ getCreator WRITE setCreator)
     Q_PROPERTY(int players READ getPlayers WRITE setPlayers)
+    Q_PROPERTY(bool started READ getStarted WRITE setStarted)
 
 public:
     explicit QGameInfo(QObject *parent = 0);
@@ -29,6 +30,9 @@ public:
     int getPlayers() const { return players; }
     void setPlayers(int _players) { players = _players; }
 
+    bool getStarted() const { return started; }
+    void setStarted(bool _started) { started = _started; }
+
 signals:
 
 public slots:
@@ -36,7 +40,7 @@ public slots:
 private:
     QString name;
     QString creator;
-   // QList<QString> members;
+    bool started;
     int players;
 };
 

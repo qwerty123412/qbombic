@@ -18,14 +18,16 @@ public:
     ~QGame();
     
     void start();
+
+    void processState(const QVariant& data);
+
 signals:
     void ended();
 public slots:
-    void onTick();
+
 private:
     KAstTopLevel window;
     MainWindow* main;
-    QTimer sendTimer;
     KAsteroidsView* view;
 };
 
