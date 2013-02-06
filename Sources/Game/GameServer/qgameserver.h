@@ -25,7 +25,6 @@ public:
     void broadcastNotification(const QString& notif, const QVariant& data = QVariant());
 
     void onLogin(std::shared_ptr<QJsonRequest> request);
-//    void onGetPlayers(std::shared_ptr<QJsonRequest> request);
     QList<QPlayer*> getPlayers() const { return players.values(); }
     QList<QGame*> getGames() const { return games.values(); }
 

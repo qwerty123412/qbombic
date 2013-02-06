@@ -41,6 +41,14 @@ public:
 
     void gameQuit() { game = nullptr; }
 
+    // game events
+    template< typename Direction >
+    void onMove(const QVariant&, Direction direction);
+    void onMoveLeft(const QVariant&);
+    void onMoveUp(const QVariant&);
+    void onMoveRight(const QVariant&);
+    void onPushBomb(const QVariant&);
+
 signals:
     
 public slots:

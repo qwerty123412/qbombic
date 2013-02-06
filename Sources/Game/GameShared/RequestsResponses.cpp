@@ -18,4 +18,22 @@ const QString Notifications::GAME_LIST = "GAME_LIST";
 const QString Notifications::MESSAGE = "MESSAGE";
 const QString Notifications::QUIT_GAME = "QUIT_GAME";
 const QString Notifications::GAME_STARTED = "GAME_STARTED";
+const QString Notifications::GAME_STOPPED = "GAME_STOPPED";
 const QString Notifications::GAME_STATE = "GAME_STATE";
+
+const QString GameEvents::MOVE_DOWN = "M_DOWN";
+const QString GameEvents::MOVE_LEFT = "M_LEFT";
+const QString GameEvents::MOVE_RIGHT = "M_RIGHT";
+const QString GameEvents::MOVE_UP = "M_UP";
+const QString GameEvents::PUSH_BOMB = "PUSH_BOMB";
+
+const QString GameDataObjects::BOMB = "BOMB";
+const QString GameDataObjects::FIRE = "FIRE";
+const QString GameDataObjects::PLAYER = "PLAYER";
+const QString GameDataObjects::WALL = "WALL";
+const QString GameDataObjects::POWERUP = "POWERUP";
+const QString GameDataObjects::P_NAME = "NAME";
+const QString GameDataObjects::P_COORDINATIONS = "COORDINATIONS";
+const QString GameDataObjects::P_BOMBS = "BOMBS";
+const QString GameDataObjects::P_DEATHS = "DEATHS";
+const QString GameDataObjects::P_KILLS = "KILLS";
