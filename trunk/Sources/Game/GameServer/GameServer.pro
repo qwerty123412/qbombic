@@ -33,7 +33,13 @@ DEPENDPATH += $$PWD/../ProtocolLib
 HEADERS += \
     qplayer.h \
     qgameserver.h \
-    qgame.h
+    qgame.h \
+    qgamecharacter.h \
+    qgameobject.h \
+    qgamebomb.h \
+    qgamefire.h \
+    qgamewall.h \
+    qgamepowerup.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../GameShared/release/ -lGameShared
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../GameShared/debug/ -lGameShared

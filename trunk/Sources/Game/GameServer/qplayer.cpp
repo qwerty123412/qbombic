@@ -19,6 +19,13 @@ QPlayer::QPlayer(QGameServer* server, QJsonCommunication *comm, const QString na
     comm->registerRequest(Request::START_GAME, std::bind(&QPlayer::onGameStart, this, _1));
     comm->registerRequest(Request::GET_GAMES, std::bind(&QPlayer::onGetGameList, this, _1));
 
+    //  game notifications
+    comm->registerNotification(GameEvents::MOVE_DOWN, std::bind(&QPlayer::onMove<QGame::Directions>, this, _1, QGame::Directions::DOWN));
+    comm->registerNotification(GameEvents::MOVE_LEFT, std::bind(&QPlayer::onMove<QGame::Directions>, this, _1, QGame::Directions::LEFT));
+    comm->registerNotification(GameEvents::MOVE_RIGHT, std::bind(&QPlayer::onMove<QGame::Directions>, this, _1, QGame::Directions::RIGHT));
+    comm->registerNotification(GameEvents::MOVE_UP, std::bind(&QPlayer::onMove<QGame::Directions>, this, _1, QGame::Directions::UP));
+    comm->registerNotification(GameEvents::PUSH_BOMB, std::bind(&QPlayer::onPushBomb, this, _1));
+
 }
 
 QPlayer::~QPlayer()
@@ -50,12 +57,7 @@ void QPlayer::onGameStart(std::shared_ptr<QJsonRequest> req)
         return;
     }
 
-    if (!game->start())
-    {
-        req->sendResponse(Response::FAILED);
-        return;
-    }
-
+    game->start();
 
     req->sendResponse(Response::OK);
 }
@@ -117,15 +119,23 @@ void QPlayer::onGameLeave(const QVariant &)
     server->gameListChanged();
 }
 
-void QPlayer::onGameCommand(const QVariant &command)
-{
-    game->command(this, extractQVariantItem(command, "command"));
-}
-
 void QPlayer::onGameState(const QVariant &state)
 {
     if (game)
         game->broadcastNotification(nullptr, Notifications::GAME_STATE, state);
+}
+
+template<typename Direction>
+void QPlayer::onMove(const QVariant&, Direction direction)
+{
+    if (game)
+        game->move(this, direction);
+}
+
+void QPlayer::onPushBomb(const QVariant &)
+{
+    if (game)
+        game->bomb(this);
 }
 
 void QPlayer::onGetGameList(std::shared_ptr<QJsonRequest> req)

@@ -26,7 +26,8 @@ HEADERS += gameshared.h\
     qplayerinfo.h \
     RequestsResponses.h \
     qgameinfo.h \
-    qgamestate.h
+    qgamestate.h \
+    qcoordinations.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

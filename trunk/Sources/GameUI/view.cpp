@@ -270,7 +270,7 @@ bool KAsteroidsView::readSprites()
 	i++;
     }
 
-    for(int i = 0; i < m_level_data.size(); i++) {
+    for(unsigned i = 0; i < m_level_data.size(); i++) {
         if(m_level_data[i] != 0) {
             AnimatedPixmapItem* test = new AnimatedPixmapItem( animation[m_level_data[i]], &field );
             test->setPos((i%LEVEL_TILES_X)*TILE_SIZE, floor(i/LEVEL_TILES_X)*TILE_SIZE);

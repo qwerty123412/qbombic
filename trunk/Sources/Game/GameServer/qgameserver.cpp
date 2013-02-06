@@ -119,7 +119,7 @@ QGame* QGameServer::createGame(QPlayer *player, const QString &name)
     if (games.contains(name))
         return nullptr;
 
-    QGame* ret = new QGame(this, name, player);
+    QGame* ret = new QGame(this, name, player, this);
     games.insert(name, ret);
     gameListChanged();
     return ret;
@@ -127,7 +127,7 @@ QGame* QGameServer::createGame(QPlayer *player, const QString &name)
 
 void QGameServer::closeGame(QPlayer *player)
 {
-    if (!player->getGame() || player->getGame()->getCreator() != player)// close only if player is also creatro
+    if (!player->getGame() || player->getGame()->getCreator() != player)// close only if player is also creator
         return;
     games.remove(player->getGame()->getName());
     delete player->getGame();
