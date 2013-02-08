@@ -14,7 +14,7 @@ using namespace std::placeholders;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), comm(nullptr), exitApp(true)
+    ui(new Ui::MainWindow), comm(nullptr), exitApp(true), gameObject(nullptr)
 {
     ui->setupUi(this);
     connect(ui->actionOdhlasit, SIGNAL(triggered()), SLOT(logoutClick()));
@@ -77,7 +77,7 @@ void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
         this->ui->textBrowserChat->append("![Game was closed.]");
         this->ui->pushButtonLeaveGame->setEnabled(false);
         this->ui->pushButtonNewGame->setEnabled(true);
-        this->ui->pushButtonNewGame->setText("Start");
+        this->ui->pushButtonStart->setText("Start");
         this->ui->pushButtonStart->setEnabled(false);
         this->ui->listViewGames->setEnabled(true);
         gameEnded();
@@ -157,6 +157,8 @@ void MainWindow::refreshGameList(const QString &, const QVariant &data)
         QGameInfo info;
         QJson::QObjectHelper::qvariant2qobject(g.toMap(), &info);
         QString label = QString("%1: %2 (%3)").arg(info.getCreator()).arg(info.getName()).arg(info.getPlayers());
+        if (info.getStarted())
+            label += " *";
         QStandardItem* row = new QStandardItem(label);
         row->setEditable(false);
         QVariantMap data;

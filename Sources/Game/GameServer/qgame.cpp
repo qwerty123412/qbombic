@@ -8,25 +8,7 @@
 #include "qcoordinations.h"
 #include "qgamecharacter.h"
 
-static const unsigned SIZE_X = 26;
-static const unsigned SIZE_Y = 18;
-
-static inline unsigned at(unsigned x, unsigned y, unsigned line = SIZE_X)
-{
-    return y * line + x;
-}
-
-static inline void index(unsigned in, unsigned &x, unsigned &y, unsigned line = SIZE_X)
-{
-    x = in % line;
-    y = in / line;
-}
-
-static inline unsigned size(unsigned x = SIZE_X, unsigned y = SIZE_Y)
-{
-    return x * y;
-}
-
+#include "qgamesettings.h" // compile settings of timing and game area
 
 QGame::QGame(QGameServer *server, const QString &name, QPlayer *creator, QObject *parent) :
     QObject(parent), started(false), server(server), comm(creator->getComm()), name(name),
@@ -191,6 +173,13 @@ void QGame::refreshGameWorld()
         QGameFire* fire = object.data<QGameFire>();
         if (!fire->firing())
             area.remove(object.getCoords());
+        else if (players.contains(object.getCoords()))
+        {
+            dead.push_back(players[object.getCoords()]);
+            players.remove(object.getCoords());
+            fire->getOwner()->kill();
+        }
+
     }
 
     // process bombs
@@ -211,11 +200,12 @@ void QGame::refreshGameWorld()
 
             bomb->getOwner()->addBomb();
             QCoordinations center = object.getCoords();
-            area.insert(center, QGameObject(new QGameFire(bomb->getOwner()), center));
+            area.insert(center, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), center));
 
             for (QPair<int,int> way : ways)
             {
                 QCoordinations actual(center);
+                bool stop = false;
                 for (int i = 0; i < 4; ++i)
                 {
                     actual.X() += way.first;
@@ -223,30 +213,32 @@ void QGame::refreshGameWorld()
 
                     if (!area.contains(actual) || area[actual].type() == QGameObject::POWERUP)
                     {
-                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner()), actual));
+                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
                         continue;
                     }
                     QGameObject& current = area[actual];
 
-                    switch(current.type())
-                    {
-                    case QGameObject::BOMB:
-                        current.data<QGameBomb>()->fired();
-                    case QGameObject::FIRE:
-                        break;
-                    case QGameObject::WALL:
-                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner()), actual));
-                        break;
-                    }
                     if (players.contains(actual))
                     {
                         dead.push_back(players[actual]);
                         players.remove(actual);
                         bomb->getOwner()->kill();
-                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner()), actual));
-                        continue;
+                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
                     }
-                    break;
+                    switch(current.type())
+                    {
+                    case QGameObject::BOMB:
+                        current.data<QGameBomb>()->fired();
+                    case QGameObject::FIRE:
+                        stop = true;
+                        break;
+                    case QGameObject::WALL:
+                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
+                        stop = true;
+                        break;
+                    }
+                    if (stop)
+                        break;
                 }
             }
         }
@@ -279,7 +271,7 @@ void QGame::refreshGameWorld()
             continue;
         if (lastEvent[character->getPlayer()] == PlayerEvents::PUSH_BOMB)
         {
-            area.insert(character->getCoordinations(), QGameObject(new QGameBomb(character), character->getCoordinations()));
+            area.insert(character->getCoordinations(), QGameObject(new QGameBomb(character, time2frame<QGameBomb>()), character->getCoordinations()));
             continue;
         }
         QCoordinations newCoords(character->getCoordinations());
@@ -346,11 +338,31 @@ void QGame::refreshGameWorld()
 void QGame::sendWorldInfo()
 {
     QVariantMap data;
+
+    QList<QGameObject> fires, bombs, powerups, walls;
+    for (QGameObject& object : area.values())
+    {
+        switch(object.type())
+        {
+        case QGameObject::BOMB:
+            bombs << object;
+            break;
+        case QGameObject::FIRE:
+            fires << object;
+            break;
+        case QGameObject::POWERUP:
+            powerups << object;
+            break;
+        case QGameObject::WALL:
+            walls << object;
+            break;
+        }
+    }
     sendPlayersInfo(data);
-    sendFiresInfo(data);
-    sendBombsInfo(data);
-    sendPowerups(data);
-    sendWalls(data);
+    sendFiresInfo(fires, data);
+    sendBombsInfo(bombs, data);
+    sendPowerups(powerups, data);
+    sendWalls(walls, data);
 
     broadcastNotification(nullptr, Notifications::GAME_STATE, data);
 }
@@ -373,55 +385,39 @@ void QGame::sendPlayersInfo(QVariantMap &data)
     data.insert(GameDataObjects::PLAYER, chs);
 }
 
-void QGame::sendFiresInfo(QVariantMap &data)
+void QGame::sendFiresInfo(const QList<QGameObject>& list, QVariantMap &data)
 {
     QVariantList fires;
-    for (QGameObject& fire : area.values())
-    {
-        if (fire.type() != QGameObject::FIRE)
-            continue;
-
+    for (const QGameObject& fire : list)
         fires << QJson::QObjectHelper::qobject2qvariant(&fire.getCoords());
-    }
+
     data.insert(GameDataObjects::FIRE, fires);
 }
 
-void QGame::sendPowerups(QVariantMap &data)
+void QGame::sendPowerups(const QList<QGameObject>& list, QVariantMap &data)
 {
     QVariantList powerups;
-    for (QGameObject& powerup : area.values())
-    {
-        if (powerup.type() != QGameObject::POWERUP)
-            continue;
-
+    for (const QGameObject& powerup : list)
         powerups << QJson::QObjectHelper::qobject2qvariant(&powerup.getCoords());
-    }
+
     data.insert(GameDataObjects::POWERUP, powerups);
 }
 
-void QGame::sendBombsInfo(QVariantMap &data)
+void QGame::sendBombsInfo(const QList<QGameObject> &list, QVariantMap &data)
 {
     QVariantList bombs;
-    for (QGameObject& bomb : area.values())
-    {
-        if (bomb.type() != QGameObject::BOMB)
-            continue;
-
+    for (const QGameObject& bomb : list)
         bombs << QJson::QObjectHelper::qobject2qvariant(&bomb.getCoords());
-    }
+
     data.insert(GameDataObjects::BOMB, bombs);
 }
 
-void QGame::sendWalls(QVariantMap &data)
+void QGame::sendWalls(const QList<QGameObject> &list, QVariantMap &data)
 {
     QVariantList walls;
-    for (QGameObject& wall : area.values())
-    {
-        if (wall.type() != QGameObject::WALL)
-            continue;
-
+    for (const QGameObject& wall : list)
         walls << QJson::QObjectHelper::qobject2qvariant(&wall.getCoords());
-    }
+
     data.insert(GameDataObjects::WALL, walls);
 }
 

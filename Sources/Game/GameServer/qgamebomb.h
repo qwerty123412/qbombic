@@ -7,6 +7,8 @@ class QGameBomb
 {
 public:
 
+    static const unsigned TTL = 2000;// time in ms
+
     QGameBomb(QGameCharacter* owner, unsigned ttl = 20) :
         owner(owner), ttl(ttl)
     {

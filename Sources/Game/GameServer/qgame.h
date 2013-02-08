@@ -54,10 +54,10 @@ public:
     void bomb(QPlayer* player);
 
     void sendPlayersInfo(QVariantMap& data);
-    void sendBombsInfo(QVariantMap& data);
-    void sendFiresInfo(QVariantMap& data);
-    void sendPowerups(QVariantMap& data);
-    void sendWalls(QVariantMap& data);
+    void sendBombsInfo(const QList<QGameObject> &list, QVariantMap& data);
+    void sendFiresInfo(const QList<QGameObject> &list, QVariantMap& data);
+    void sendPowerups(const QList<QGameObject> &list, QVariantMap& data);
+    void sendWalls(const QList<QGameObject> &list, QVariantMap& data);
 
 signals:
 
