@@ -21,6 +21,13 @@ public:
 
     void processState(const QVariant& data);
 
+    void moveDown();
+    void moveLeft();
+    void moveRight();
+    void moveUp();
+    void pushBomb();
+
+
 signals:
     void ended();
 public slots:
