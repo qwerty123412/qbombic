@@ -32,6 +32,31 @@ void QGame::start()
     connect(&window, SIGNAL(destroyed()), main, SLOT(leaveGame()));
 }
 
+void QGame::moveDown()
+{
+    main->getComm()->sendNotification(GameEvents::MOVE_UP);
+}
+
+void QGame::moveLeft()
+{
+    main->getComm()->sendNotification(GameEvents::MOVE_LEFT);
+}
+
+void QGame::moveRight()
+{
+    main->getComm()->sendNotification(GameEvents::MOVE_RIGHT);
+}
+
+void QGame::moveUp()
+{
+    main->getComm()->sendNotification(GameEvents::MOVE_UP);
+}
+
+void QGame::pushBomb()
+{
+    main->getComm()->sendNotification(GameEvents::PUSH_BOMB);
+}
+
 void QGame::processState(const QVariant &data)
 {
     QVariantMap map = data.toMap();
