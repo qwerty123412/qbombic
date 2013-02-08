@@ -66,6 +66,16 @@ public:
         return !operator==(another);
     }
 
+    bool operator<(const QGameObject& another) const
+    {
+        return object.get() < another.object.get();
+    }
+
+    bool operator>(const QGameObject& another) const
+    {
+        return object.get() > another.object.get();
+    }
+
 private:
 
     std::shared_ptr<void> object;
