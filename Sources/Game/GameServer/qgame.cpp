@@ -104,7 +104,34 @@ void QGame::start()
 {
     // generate random walls and random powerups
     unsigned x, y;
-    unsigned count = 5;
+    unsigned count = 2;
+    QCoordinations last;
+
+    while (count)
+    {
+        index(qrand() % size(SIZE_X - 7, SIZE_Y - 7), x, y, SIZE_X - 7);
+
+        if (count != 2 && !(
+                    last.Y() > y + 7 || // is up to it
+                    last.Y() + 7 < y || // is down to it
+                    last.X() > x + 7 || // is left to it
+                    last.X() + 7 < x    // is right to it
+                    ))
+            continue;
+
+        for (int i = 0; i < 5; ++i)
+            area.insert(QCoordinations(x + i, y, this), QGameObject(new QGameUndestroyable(), QCoordinations(x + 1, y, this)));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            for (int j = 0; j < 5; j+= 2)
+                area.insert(QCoordinations(x + j, y + (2 * (i + 1))), QGameObject(new QGameUndestroyable(), QCoordinations(x + j, y + (2 * (i + 1)))));
+        }
+
+        --count;
+    }
+
+    count = 5;
     while (count)
     {
         index(qrand() % size(), x, y);
@@ -230,6 +257,7 @@ void QGame::refreshGameWorld()
                     case QGameObject::BOMB:
                         current.data<QGameBomb>()->fired();
                     case QGameObject::FIRE:
+                    case QGameObject::UNDESTROYABLE:
                         stop = true;
                         break;
                     case QGameObject::WALL:
@@ -295,7 +323,11 @@ void QGame::refreshGameWorld()
 
         if (players.contains(newCoords))// place is full
             continue;
-        if (area.contains(newCoords) && area[newCoords].type() == QGameObject::WALL)// there is a wall
+        if (area.contains(newCoords) && (
+                    area[newCoords].type() == QGameObject::WALL ||
+                    area[newCoords].type() == QGameObject::BOMB ||
+                    area[newCoords].type() == QGameObject::UNDESTROYABLE
+                    ))// there is a wall, bomb, or undestroyable wall
             continue;
 
         players.remove(character->getCoordinations());
@@ -339,7 +371,7 @@ void QGame::sendWorldInfo()
 {
     QVariantMap data;
 
-    QList<QGameObject> fires, bombs, powerups, walls;
+    QList<QGameObject> fires, bombs, powerups, walls, undestrs;
     for (QGameObject& object : area.values())
     {
         switch(object.type())
@@ -356,6 +388,9 @@ void QGame::sendWorldInfo()
         case QGameObject::WALL:
             walls << object;
             break;
+        case QGameObject::UNDESTROYABLE:
+            undestrs << object;
+            break;
         }
     }
     sendPlayersInfo(data);
@@ -363,6 +398,7 @@ void QGame::sendWorldInfo()
     sendBombsInfo(bombs, data);
     sendPowerups(powerups, data);
     sendWalls(walls, data);
+    sendUndestroyables(undestrs, data);
 
     broadcastNotification(nullptr, Notifications::GAME_STATE, data);
 }
@@ -419,6 +455,15 @@ void QGame::sendWalls(const QList<QGameObject> &list, QVariantMap &data)
         walls << QJson::QObjectHelper::qobject2qvariant(&wall.getCoords());
 
     data.insert(GameDataObjects::WALL, walls);
+}
+
+void QGame::sendUndestroyables(const QList<QGameObject> &list, QVariantMap &data)
+{
+    QVariantList undestrs;
+    for (const QGameObject& undestr : list)
+        undestrs << QJson::QObjectHelper::qobject2qvariant(&undestr.getCoords());
+
+    data.insert(GameDataObjects::UNDESTROYABLE, undestrs);
 }
 
 

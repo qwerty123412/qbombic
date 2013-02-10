@@ -7,6 +7,7 @@
 #include "qgamefire.h"
 #include "qgamewall.h"
 #include "qgamepowerup.h"
+#include "qgameundestroyable.h"
 #include "qcoordinations.h"
 
 class QGameObject
@@ -35,6 +36,10 @@ public:
         object(power), objType(POWERUP), coords(coords)
     {}
 
+    QGameObject(QGameUndestroyable* undestroyable, const QCoordinations& coords) :
+        object(undestroyable), objType(), coords(coords)
+    {}
+
     ~QGameObject()
     {
     }
@@ -53,6 +58,7 @@ public:
         FIRE,
         WALL,
         POWERUP,
+        UNDESTROYABLE,
         NONE
     };
 

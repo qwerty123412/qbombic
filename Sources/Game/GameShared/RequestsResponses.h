@@ -62,6 +62,7 @@ struct GameDataObjects// server -> client
     static const QString PLAYER;
     static const QString WALL;
     static const QString POWERUP;
+    static const QString UNDESTROYABLE;
 
     static const QString P_NAME;
     static const QString P_COORDINATIONS;
