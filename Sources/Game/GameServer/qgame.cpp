@@ -127,6 +127,8 @@ void QGame::start()
             for (int j = 0; j < 5; j+= 2)
                 area.insert(QCoordinations(x + j, y + (2 * (i + 1))), QGameObject(new QGameUndestroyable(), QCoordinations(x + j, y + (2 * (i + 1)))));
         }
+        last.X() = x;
+        last.Y() = y;
 
         --count;
     }
