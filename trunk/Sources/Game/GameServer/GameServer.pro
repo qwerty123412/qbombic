@@ -40,7 +40,8 @@ HEADERS += \
     qgamefire.h \
     qgamewall.h \
     qgamepowerup.h \
-    qgamesettings.h
+    qgamesettings.h \
+    qgameundestroyable.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../GameShared/release/ -lGameShared
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../GameShared/debug/ -lGameShared

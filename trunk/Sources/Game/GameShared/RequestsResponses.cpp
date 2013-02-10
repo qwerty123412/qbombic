@@ -32,6 +32,7 @@ const QString GameDataObjects::FIRE = "FIRE";
 const QString GameDataObjects::PLAYER = "PLAYER";
 const QString GameDataObjects::WALL = "WALL";
 const QString GameDataObjects::POWERUP = "POWERUP";
+const QString GameDataObjects::UNDESTROYABLE = "UNDESTROYABLE";
 const QString GameDataObjects::P_NAME = "NAME";
 const QString GameDataObjects::P_COORDINATIONS = "COORDINATIONS";
 const QString GameDataObjects::P_BOMBS = "BOMBS";

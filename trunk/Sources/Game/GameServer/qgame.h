@@ -58,6 +58,7 @@ public:
     void sendFiresInfo(const QList<QGameObject> &list, QVariantMap& data);
     void sendPowerups(const QList<QGameObject> &list, QVariantMap& data);
     void sendWalls(const QList<QGameObject> &list, QVariantMap& data);
+    void sendUndestroyables(const QList<QGameObject> &list, QVariantMap& data);
 
 signals:
 

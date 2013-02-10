@@ -63,7 +63,7 @@ void QGame::processState(const QVariant &data)
 
     QCoordinations coords;
     QCharacter character;
-    QList<QCoordinations> walls, bombs, fires, powerups;// data
+    QList<QCoordinations> walls, bombs, fires, powerups, undestroyables;// data
     QList<QCharacter> characters;// data
     QCharacter me;// data
 
@@ -89,6 +89,12 @@ void QGame::processState(const QVariant &data)
     {
         QJson::QObjectHelper::qvariant2qobject(w.toMap(), &coords);
         walls << coords;
+    }
+
+    for( QVariant& u : map[GameDataObjects::UNDESTROYABLE].toList() )
+    {
+        QJson::QObjectHelper::qvariant2qobject(u.toMap(), &coords);
+        undestroyables << coords;
     }
 
     for( QVariant& ch : map[GameDataObjects::PLAYER].toList() )
