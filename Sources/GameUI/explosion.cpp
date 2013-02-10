@@ -1,12 +1,15 @@
 #include "explosion.h"
 
+Explosion::Explosion(AnimatedPixmapItem *bomb, int pos_x, int pos_y) : Bomb(bomb, pos_x, pos_y, 0) {
+}
+
 Explosion::Explosion(AnimatedPixmapItem *bomb,
                      int pos_x, int pos_y,
                      QList<Explosion*> &explosions,
                      int ttl, int type, int direction, int range, int tile_size,
                      std::vector<int>* level_data, int level_width,
                      QList<Bomb*> *bombs) : Bomb(bomb, pos_x, pos_y, ttl)
-{
+{    
     m_pos_x = pos_x;
     m_pos_y = pos_y;
     if(check_for_bomb(bombs)) {

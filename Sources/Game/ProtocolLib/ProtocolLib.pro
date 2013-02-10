@@ -8,7 +8,7 @@ QT       += network
 
 QT       -= gui
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++0x
 QMAKE_CXXFLAGS += -Wunused-parameter
 
 TARGET = ProtocolLib

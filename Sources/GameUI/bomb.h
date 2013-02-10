@@ -10,7 +10,7 @@ class Bomb : public QObject
 {
     Q_OBJECT
 public:
-    explicit Bomb(AnimatedPixmapItem *bomb, int pos_x, int pos_y, int ttl, QObject *parent = 0);
+    explicit Bomb(AnimatedPixmapItem *bomb, int pos_x, int pos_y, int ttl, QObject *parent = 0);    
     bool process();
     int getX();
     int getY();
@@ -22,6 +22,11 @@ public:
     int get_bomb_ownership() { return m_bomb_owner; }
 
     int get_bomb_id() { return m_id; }
+
+    int get_quadrant(int tile_size, int level_tiles_x);
+    void activate() { m_activated = true; }
+    void deactivate() { m_activated = false; }
+    bool is_activated() { return m_activated; }
 
     virtual ~Bomb();
 
@@ -35,6 +40,9 @@ protected:
     int time_to_live;
     int m_bomb_owner;
     bool m_bomb_sent;
+
+    bool m_activated;
+
     AnimatedPixmapItem* m_bomb;
 };
 

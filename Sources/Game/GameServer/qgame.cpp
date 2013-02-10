@@ -140,17 +140,20 @@ void QGame::start()
         if (area.contains(QCoordinations(x, y)))
             continue;
         area.insert(QCoordinations(x, y, this), QGameObject(new QGamePowerUp(), QCoordinations(x, y, this)));
-        --count;
+        --count;        
     }
 
     count = size() / 10;
     while (count)
     {
         index(qrand() % size(), x, y);
-        if (area.contains(QCoordinations(x, y)))
+        if (area.contains(QCoordinations(x, y))) {
+            //qDebug() << "collision";
             continue;
+        }
         area.insert(QCoordinations(x, y, this), QGameObject(new QGameWall(), QCoordinations(x, y, this)));
         --count;
+        qDebug() << "wall generated at: x=" << x << " y=" << y;
     }
 
     for (QPlayer* player : members)
@@ -323,14 +326,16 @@ void QGame::refreshGameWorld()
             break;
         }
 
-        if (players.contains(newCoords))// place is full
+        if (players.contains(newCoords))
             continue;
+
         if (area.contains(newCoords) && (
                     area[newCoords].type() == QGameObject::WALL ||
                     area[newCoords].type() == QGameObject::BOMB ||
                     area[newCoords].type() == QGameObject::UNDESTROYABLE
-                    ))// there is a wall, bomb, or undestroyable wall
+                    )) {
             continue;
+        }
 
         players.remove(character->getCoordinations());
         character->getCoordinations() = newCoords;

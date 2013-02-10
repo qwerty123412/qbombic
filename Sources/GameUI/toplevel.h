@@ -82,6 +82,10 @@ protected:
     virtual void keyPressEvent( QKeyEvent *event );
     virtual void keyReleaseEvent( QKeyEvent *event );
 
+signals:
+     void move(int direction); // 0 = up, 1 = right, 2 = down, 3 = left
+     void bombLaid();
+
 private slots:
     void slotNewGame();
 
@@ -90,6 +94,9 @@ private slots:
     void slotRocksRemoved();
 
     void slotUpdateVitals();
+
+    void slotProcessMovements(int direction);
+    void slotProcessBomb();
 
 private:
     KAsteroidsView *view;
