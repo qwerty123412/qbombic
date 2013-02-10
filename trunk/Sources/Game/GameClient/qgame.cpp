@@ -16,6 +16,8 @@ QGame::QGame(QObject *parent) :
     view = window.getView();
 
     window.setWindowTitle("Bombitch " + main->getGameName() + " [" + main->getPlayerName() + "]");
+
+    view->set_qgame(this);
 }
 
 QGame::~QGame()
@@ -30,11 +32,34 @@ void QGame::start()
 
     main->getComm()->registerNotification(Notifications::GAME_STATE, std::bind(&QGame::processState, this, _1));
     connect(&window, SIGNAL(destroyed()), main, SLOT(leaveGame()));
+    connect(&window, SIGNAL(move(int)), this, SLOT(processMovements(int)));
+    connect(&window, SIGNAL(bombLaid()), this, SLOT(bombLaid()));
+}
+
+void QGame::processMovements(int direction)
+{
+    if(direction == 0) {
+        moveUp();
+        qDebug() << "up";
+    } else if(direction == 3) {
+        moveLeft();
+        qDebug() << "left";
+    } else if(direction == 2) {        
+        moveDown();
+        qDebug() << "down";
+    } else if(direction == 1) {
+        moveRight();
+        qDebug() << "right";
+    }
+}
+
+void QGame::bombLaid() {
+    pushBomb();
 }
 
 void QGame::moveDown()
 {
-    main->getComm()->sendNotification(GameEvents::MOVE_UP);
+    main->getComm()->sendNotification(GameEvents::MOVE_DOWN);
 }
 
 void QGame::moveLeft()
@@ -113,6 +138,38 @@ void QGame::processState(const QVariant &data)
     }
 
     // send into game area here:
-// TODO: implement
+    // TODO: implement
+
+    for( QCharacter _character : characters ) {
+        view->updatePlayer(_character.getName(), _character.getCoordinations().getX(), _character.getCoordinations().getY(), _character.getBombs(), _character.getKills());
+    }
+    view->center_on(me.getName());
+
+    view->blocks_deactivate();
+    for( QCoordinations wall : walls ) {
+        view->addWall( wall.getX(), wall.getY() );
+    }
+    view->delete_deactivated_blocks();
+
+    view->bombs_deactivate();
+    for( QCoordinations bomb : bombs ) {
+        view->addBomb( bomb.getX(), bomb.getY() );
+    }
+    view->delete_deactivated_bombs();
+
+    view->explosions_deactivate();
+    for( QCoordinations explosion : fires ) {
+        view->addExplosion( explosion.getX(), explosion.getY() );
+    }
+    view->delete_deactivated_explosions();
+
+    view->powerups_deactivate();
+    for( QCoordinations powerup : powerups ) {
+        view->addPowerup( powerup.getX(), powerup.getY() );
+    }
+    view->delete_deactivated_powerups();
+
+    qDebug() << undestroyables.size();
+
 }
 

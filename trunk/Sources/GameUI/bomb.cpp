@@ -45,6 +45,11 @@ void Bomb::explode() {
     time_to_live = 0;
 }
 
+int Bomb::get_quadrant(int tile_size, int level_tiles_x) {
+    return floor((m_pos_x )/tile_size)
+            + level_tiles_x * floor((m_pos_y)/tile_size);
+}
+
 Bomb::~Bomb()
 {
     delete m_bomb;

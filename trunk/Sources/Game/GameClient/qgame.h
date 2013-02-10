@@ -31,6 +31,8 @@ public:
 signals:
     void ended();
 public slots:
+    void processMovements(int direction);
+    void bombLaid();
 
 private:
     KAstTopLevel window;

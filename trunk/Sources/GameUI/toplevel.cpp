@@ -139,6 +139,9 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     connect( view, SIGNAL(rocksRemoved()), SLOT(slotRocksRemoved()) );
     connect( view, SIGNAL(updateVitals()), SLOT(slotUpdateVitals()) );
 
+    connect( view, SIGNAL(move(int)), this, SLOT(slotProcessMovements(int)));
+    connect( view, SIGNAL(bombLaid()), this, SLOT(slotProcessBomb()));
+
     QVBoxLayout *vb = new QVBoxLayout( mainWin );
     QHBoxLayout *hb = new QHBoxLayout;
     QHBoxLayout *hbd = new QHBoxLayout;
@@ -291,6 +294,14 @@ KAstTopLevel::~KAstTopLevel()
 
 void KAstTopLevel::playSound( const char * )
 {
+}
+
+void KAstTopLevel::slotProcessMovements(int direction) {
+    emit move(direction);
+}
+
+void KAstTopLevel::slotProcessBomb() {
+    emit bombLaid();
 }
 
 void KAstTopLevel::keyPressEvent( QKeyEvent *event )

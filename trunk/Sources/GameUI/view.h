@@ -66,6 +66,8 @@
 
 #define MAX_POWER_LEVEL          1000
 
+class QGame;
+
 class KAsteroidsView : public QWidget
 {
     Q_OBJECT
@@ -99,11 +101,37 @@ public:
     Character* getPlayer() const { return m_player; }
     const QList<Character*>& getPlayers() const { return m_players; }
 
+    void set_qgame(QGame* client_object) { m_client_object = client_object; }
+
+    void setPlayerCoordsXY(int x, int y);
+    bool check_wall_count(int count) { return m_blocks.size() == count; }
+
+    void addWall(int x, int y);
+    void addBomb(int x, int y);
+    void addExplosion(int x, int y);
+    void addPowerup(int x, int y);
+
+    void updatePlayer(QString name, int x, int y, int bombs, int kills);
+
+    void center_on(QString name);
+
+    void blocks_deactivate();
+    void delete_deactivated_blocks();
+    void bombs_deactivate();
+    void delete_deactivated_bombs();
+    void powerups_deactivate();
+    void delete_deactivated_powerups();
+    void explosions_deactivate();
+    void delete_deactivated_explosions();
+
 signals:
     void shipKilled();
     void rockHit( int size );
     void rocksRemoved();
     void updateVitals();
+
+    void move(int direction); // 0 = up, 1 = right, 2 = down, 3 = left
+    void bombLaid();
 
 private slots:    
 
@@ -117,6 +145,8 @@ protected:
     void processPowerups();
     void processBlocks();
 
+    //void receiveBombs();
+
     Character* create_character();
     Powerup* create_powerup();
     Block* create_block();
@@ -129,10 +159,14 @@ protected:
 
     void showEvent( QShowEvent * );
 
-private:
+private:    
+    QGame* m_client_object;
+
     QGraphicsScene field;
     QGraphicsView view;
     QMap<int, QList<QPixmap> > animation;
+
+    QMap<QString, Character*> players;
 
     QGraphicsTextItem *textSprite;
 

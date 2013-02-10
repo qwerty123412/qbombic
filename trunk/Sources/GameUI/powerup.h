@@ -17,6 +17,10 @@ public:
 
     int get_quadrant(int tile_size, int level_tiles_x);
 
+    void activate() { m_activated = true; }
+    void deactivate() { m_activated = false; }
+    bool is_activated() { return m_activated; }
+
     virtual ~Powerup();
 
 signals:
@@ -27,6 +31,7 @@ private:
 
     int m_id;
     int m_pos_x, m_pos_y;
+    bool m_activated;
     AnimatedPixmapItem* m_powerup_sprite;
 
 };

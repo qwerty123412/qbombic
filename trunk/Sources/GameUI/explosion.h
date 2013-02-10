@@ -7,6 +7,7 @@
 class Explosion : public Bomb
 {
 public:
+    explicit Explosion(AnimatedPixmapItem *bomb, int pos_x, int pos_y);
     Explosion(AnimatedPixmapItem *bomb,
               int pos_x, int pos_y,
               QList<Explosion*> &explosions,
