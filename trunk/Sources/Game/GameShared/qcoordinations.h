@@ -61,12 +61,20 @@ public:
 
     inline bool operator<(const QCoordinations& another) const
     {
-        return x*y < another.x * another.y;
+        if (x < another.x)
+            return true;
+        if (x == another.x)
+            return y < another.y;
+        return false;
     }
 
     inline bool operator>(const QCoordinations& another) const
     {
-        return x*y > another.x * another.y;
+        if (x > another.x)
+            return true;
+        if (x == another.x)
+            return y > another.y;
+        return false;
     }
 
     inline bool operator<=(const QCoordinations& another) const
@@ -82,7 +90,6 @@ public:
 private:
     unsigned x;
     unsigned y;
-
 };
 
 
