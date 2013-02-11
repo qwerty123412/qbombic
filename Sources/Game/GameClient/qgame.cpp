@@ -137,9 +137,6 @@ void QGame::processState(const QVariant &data)
         characters << character;
     }
 
-    // send into game area here:
-    // TODO: implement
-
     for( QCharacter _character : characters ) {
         view->updatePlayer(_character.getName(), _character.getCoordinations().getX(), _character.getCoordinations().getY(), _character.getBombs(), _character.getKills());
     }
@@ -168,8 +165,5 @@ void QGame::processState(const QVariant &data)
         view->addPowerup( powerup.getX(), powerup.getY() );
     }
     view->delete_deactivated_powerups();
-
-    qDebug() << undestroyables.size();
-
 }
 

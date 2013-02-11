@@ -1,7 +1,10 @@
 #include "qgame.h"
 
-#include "qgameserver.h"
 #include <qjson/qobjecthelper.h>
+#include <QQueue>
+
+
+#include "qgameserver.h"
 #include "qgameinfo.h"
 
 #include "RequestsResponses.h"
@@ -154,12 +157,10 @@ void QGame::start()
     {
         index(qrand() % size(), x, y);
         if (area.contains(QCoordinations(x, y))) {
-            //qDebug() << "collision";
             continue;
         }
         area.insert(QCoordinations(x, y, this), QGameObject(new QGameWall(), QCoordinations(x, y, this)));
         --count;
-        qDebug() << "wall generated at: x=" << x << " y=" << y;
     }
 
     for (QPlayer* player : members)
@@ -201,6 +202,7 @@ void QGame::refreshGameWorld()
 {
     const QVector<QPair<int,int>> ways{ {-1, 0}, {1, 0} ,{0, -1}, {0, 1} };
     QList<QGameCharacter*> dead;
+    QQueue<QGameObject> explosiveBombs;
 
     // process fires
     for (QGameObject& object : area.values())
@@ -221,67 +223,64 @@ void QGame::refreshGameWorld()
     }
 
     // process bombs
-    bool processBombs;
-    do
+    for(QGameObject& object : area.values())
     {
-        processBombs = false;
-        for(QGameObject& object : area.values())
+        if (object.type() != QGameObject::BOMB)
+            continue;
+
+        QGameBomb* bomb = object.data<QGameBomb>();
+        if (bomb->explosion())
+            explosiveBombs.push_back(object);
+    }
+
+    // process explosive bombs
+    while (!explosiveBombs.empty())
+    {
+        QGameObject object = explosiveBombs.front();
+        explosiveBombs.pop_front();
+        QGameBomb* bomb = object.data<QGameBomb>();
+        QCoordinations center = object.getCoords();
+
+        bomb->getOwner()->addBomb();
+        area.insert(center, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), center));
+
+        for (QPair<int, int> way : ways)
         {
-            if (object.type() != QGameObject::BOMB)
-                continue;
-
-            QGameBomb* bomb = object.data<QGameBomb>();
-            if (!bomb->explosion())
-                continue;
-
-            processBombs = true;
-
-            bomb->getOwner()->addBomb();
-            QCoordinations center = object.getCoords();
-            area.insert(center, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), center));
-
-            for (QPair<int,int> way : ways)
+            QCoordinations actual(center);
+            bool stop = false;
+            for (int i = 0; i < 4 && !stop; ++i)
             {
-                QCoordinations actual(center);
-                bool stop = false;
-                for (int i = 0; i < 4; ++i)
+                actual.X() += way.first;
+                actual.Y() += way.second;
+
+                if (players.contains(actual))
                 {
-                    actual.X() += way.first;
-                    actual.Y() += way.second;
-
-                    if (!area.contains(actual) || area[actual].type() == QGameObject::POWERUP)
-                    {
-                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
-                        continue;
-                    }
-                    QGameObject& current = area[actual];
-
-                    if (players.contains(actual))
-                    {
-                        dead.push_back(players[actual]);
-                        players.remove(actual);
-                        bomb->getOwner()->kill();
-                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
-                    }
-                    switch(current.type())
-                    {
-                    case QGameObject::BOMB:
-                        current.data<QGameBomb>()->fired();
-                    case QGameObject::FIRE:
-                    case QGameObject::UNDESTROYABLE:
-                        stop = true;
-                        break;
-                    case QGameObject::WALL:
-                        area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
-                        stop = true;
-                        break;
-                    }
-                    if (stop)
-                        break;
+                    dead.push_back(players[actual]);
+                    players.remove(actual);
+                    bomb->getOwner()->kill();
+                }
+                if (!area.contains(actual) || area[actual].type() == QGameObject::POWERUP)
+                {
+                    area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
+                    continue;
+                }
+                QGameObject& current = area[actual];
+                switch (current.type())
+                {
+                case QGameObject::BOMB:
+                    explosiveBombs.push_back(current);
+                case QGameObject::FIRE:
+                case QGameObject::UNDESTROYABLE:
+                    stop = true;
+                    break;
+                case QGameObject::WALL:
+                    area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
+                    stop = true;
+                    break;
                 }
             }
         }
-    } while (processBombs);
+    }
 
     //process deads
     for (QGameCharacter* character : dead)

@@ -240,8 +240,10 @@ void MainWindow::leaveGame()
     this->ui->pushButtonNewGame->setEnabled(true);
     this->ui->pushButtonLeaveGame->setEnabled(false);
     this->ui->pushButtonStart->setEnabled(false);
+    this->ui->pushButtonStart->setText("Start");
     this->ui->listViewGames->setEnabled(true);
     this->ui->textBrowserChat->append("![Game was left.]");
+    gameEnded();
 }
 
 void MainWindow::gameSelected(QModelIndex index)
