@@ -191,26 +191,10 @@ private:
     bool mGoUp;
     bool mGoDown;
     bool mGoLeft;
-    bool mGoRight;
-
-    bool rotateL;
-    bool rotateR;
-    bool thrustShip;
-    bool shootShip;
-    bool teleportShip;
-    bool brakeShip;
-    bool pauseShip;
-    bool shieldOn;
-
-    //new
+    bool mGoRight;    
     bool bombingEnabled;
-    int maxBombs;
-    int bombCount;
-    int bombCooldown;
-    //end
 
-    double shipDx;
-    double shipDy;
+    int bombingCooldown;
 
     int  textDy;
     int  mFrameNum;

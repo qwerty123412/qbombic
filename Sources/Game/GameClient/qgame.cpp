@@ -165,5 +165,10 @@ void QGame::processState(const QVariant &data)
         view->addPowerup( powerup.getX(), powerup.getY() );
     }
     view->delete_deactivated_powerups();
+
+    for( QCoordinations undestroyable : undestroyables ) {
+        view->addUndestroyable( undestroyable.getX(), undestroyable.getY() );
+    }
+
 }
 

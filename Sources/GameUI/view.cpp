@@ -160,6 +160,8 @@ KAsteroidsView::KAsteroidsView( QWidget *parent)
     refreshRate = REFRESH_DELAY;
     bombingEnabled = FALSE;
 
+    bombingCooldown = 0;
+
     initialized = readSprites();
 
     mTimerId = -1;
@@ -254,23 +256,13 @@ void KAsteroidsView::updatePlayer(QString name, int x, int y, int bombs, int kil
 void KAsteroidsView::newPlayer()
 {
     if ( !initialized )
-	return;
-
-    //m_player->setXY(TILE_SIZE * 1, TILE_SIZE * 1);
+    return;
 
     mGoUp = false;
     mGoDown = false;
     mGoLeft = false;
-    mGoRight = false;
-
-    //new
-    bombingEnabled = FALSE;
-    maxBombs = 10;
-    bombCount = 0;
-    bombCooldown = 0;
-    //end
-
-    //ship->show();
+    mGoRight = false;    
+    bombingEnabled = FALSE;   
 }
 
 bool KAsteroidsView::readSprites()
@@ -286,8 +278,8 @@ bool KAsteroidsView::readSprites()
         QFileInfo fi(wildcard);
         foreach (QString entry, QDir(fi.path(), fi.fileName()).entryList())
             anim << QPixmap(fi.path() + "/" + entry);
-	animation.insert( kas_animations[i].id, anim );
-	i++;
+    animation.insert( kas_animations[i].id, anim );
+    i++;
     }
 /*
     for(unsigned i = 0; i < m_level_data.size(); i++) {
@@ -392,19 +384,7 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
 {
     field.advance();
 
-    //processBombs();
-    //processDeaths();
     processChar();    
-    //processPowerups();
-    //processBlocks();
-
-    /*
-    if(mFrameNum % (FPS*30) == 0) {
-        create_powerup();
-    }
-    */
-
-    // ----
 
     if ( textSprite->isVisible() )
     {
@@ -420,6 +400,7 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
     }    
 
     mFrameNum++;
+
 }
 
 void KAsteroidsView::wrapSprite( QGraphicsItem *s )
@@ -435,7 +416,7 @@ void KAsteroidsView::wrapSprite( QGraphicsItem *s )
     if ( y > field.height() )
 	s->setPos( s->x(), s->y() - field.height() );
     else if ( y < 0 )
-	s->setPos( s->x(), field.height() + s->y() );
+    s->setPos( s->x(), field.height() + s->y() );
 }
 
 bool KAsteroidsView::check_bomb_placement_possibility(int pos_x, int pos_y) {
@@ -459,7 +440,7 @@ bool KAsteroidsView::check_explosion_placement_possibility(int pos_x, int pos_y)
 }
 
 void KAsteroidsView::processBombs()
-{    
+{
     QList<Bomb*>::Iterator it;
     for(it = m_bombs.begin(); it != m_bombs.end(); it++) {
         if((*it)->process()) {
@@ -676,7 +657,9 @@ void KAsteroidsView::processChar()
 
     }
 
-    view.centerOn(players[m_player_name]->getCharacterSprite());
+    if(!m_player_name.isNull()) {
+        view.centerOn(players[m_player_name]->getCharacterSprite());
+    }
 
     if(mGoUp) {
         emit move(0);
@@ -704,7 +687,6 @@ void KAsteroidsView::center_on(QString name) {
     if(m_player_name.isNull()) {
         m_player_name = name;
     }
-    //view.centerOn(players[name]->getCharacterSprite());
 }
 
 void KAsteroidsView::processDeaths() {
