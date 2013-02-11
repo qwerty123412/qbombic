@@ -106,6 +106,7 @@ public:
     void setPlayerCoordsXY(int x, int y);
     bool check_wall_count(int count) { return m_blocks.size() == count; }
 
+    void addUndestroyable(int x, int y);
     void addWall(int x, int y);
     void addBomb(int x, int y);
     void addExplosion(int x, int y);
@@ -182,6 +183,7 @@ private:
     QList<Block*> m_blocks;
 
     Character* m_player;
+    QString m_player_name;
 
     int m_bomb_time_left;
     //end

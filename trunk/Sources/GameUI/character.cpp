@@ -5,9 +5,14 @@ Character::Character(AnimatedPixmapItem *character_sprite, int pos_x, int pos_y,
 {
     m_character_sprite = character_sprite;
     m_character_sprite->setPos(pos_x, pos_y);
+
     m_pos_x = pos_x;
     m_pos_y = pos_y;
+    m_target_x = pos_x;
+    m_target_y = pos_y;
+
     m_max_bombs = 3;
+
     m_bomb_count = 0;
     m_id = qrand() % 10000;
 }

@@ -13,8 +13,12 @@ public:
     explicit Character(AnimatedPixmapItem *character_sprite, int pos_x, int pos_y, QObject *parent = 0);
     int getX() { return m_pos_x; }
     int getY() { return m_pos_y; }
+    int getTargetX() { return m_target_x; }
+    int getTargetY() { return m_target_y; }
     AnimatedPixmapItem* getCharacterSprite();
+
     Character* setXY(int x, int y);
+    Character* setTargetXY(int x, int y) { m_target_x = x; m_target_y = y; return this; }
 
     int getUpperLeftQuadrant(int tile_size, int speed, int level_tiles_x);
     int getLowerLeftQuadrant(int tile_size, int speed, int level_tiles_x);
@@ -43,6 +47,7 @@ public slots:
 private:
     int m_id;
     int m_pos_x, m_pos_y;
+    int m_target_x, m_target_y;
     int m_max_bombs, m_bomb_count;
     AnimatedPixmapItem* m_character_sprite;
     Bomb* m_last_bomb;
