@@ -97,6 +97,8 @@ private slots:
 
     void slotProcessMovements(int direction);
     void slotProcessBomb();
+    void slotKillCount( int kills );
+    void slotDeathCount( int deaths );
 
 private:
     KAsteroidsView *view;

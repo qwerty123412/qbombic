@@ -112,7 +112,7 @@ public:
     void addExplosion(int x, int y);
     void addPowerup(int x, int y);
 
-    void updatePlayer(QString name, int x, int y, int bombs, int kills);
+    void updatePlayer(QString name, int x, int y, int kills, int deaths);
 
     void center_on(QString name);
 
@@ -133,6 +133,9 @@ signals:
 
     void move(int direction); // 0 = up, 1 = right, 2 = down, 3 = left
     void bombLaid();
+
+    void killCount(int kills);
+    void deathCount(int deaths);
 
 private slots:    
 
@@ -195,6 +198,7 @@ private:
     bool bombingEnabled;
 
     int bombingCooldown;
+    int upCool, downCool, leftCool, rightCool;
 
     int  textDy;
     int  mFrameNum;

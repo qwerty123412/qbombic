@@ -138,7 +138,7 @@ void QGame::processState(const QVariant &data)
     }
 
     for( QCharacter _character : characters ) {
-        view->updatePlayer(_character.getName(), _character.getCoordinations().getX(), _character.getCoordinations().getY(), _character.getBombs(), _character.getKills());
+        view->updatePlayer(_character.getName(), _character.getCoordinations().getX(), _character.getCoordinations().getY(), _character.getKills(), _character.getDeaths());
     }
     view->center_on(me.getName());
 
@@ -169,6 +169,8 @@ void QGame::processState(const QVariant &data)
     for( QCoordinations undestroyable : undestroyables ) {
         view->addUndestroyable( undestroyable.getX(), undestroyable.getY() );
     }
+
+    qDebug() << "bombs: " << me.getBombs() << " kills: " << me.getKills() << " deaths:" << me.getDeaths();
 
 }
 

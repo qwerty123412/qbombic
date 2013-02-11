@@ -141,6 +141,8 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
 
     connect( view, SIGNAL(move(int)), this, SLOT(slotProcessMovements(int)));
     connect( view, SIGNAL(bombLaid()), this, SLOT(slotProcessBomb()));
+    connect( view, SIGNAL(killCount(int)), this, SLOT(slotKillCount(int)) );
+    connect( view, SIGNAL(deathCount(int)), this, SLOT(slotDeathCount(int)) );
 
     QVBoxLayout *vb = new QVBoxLayout( mainWin );
     QHBoxLayout *hb = new QHBoxLayout;
@@ -153,10 +155,10 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
 
     mainWin->setPalette( pal );
 
-    hb->addSpacing( 10 );
+    hb->addSpacing( 180 );
 
     QLabel *label;
-    label = new QLabel( tr("Score"), mainWin );
+    label = new QLabel( tr("Kills"), mainWin );
     label->setFont( labelFont );
     label->setPalette( pal );
     label->setFixedWidth( label->sizeHint().width() );
@@ -170,20 +172,21 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     hb->addWidget( scoreLCD );
     hb->addStretch( 10 );
 
-    label = new QLabel( tr("Level"), mainWin );
+    label = new QLabel( tr("Deaths"), mainWin );
     label->setFont( labelFont );
     label->setPalette( pal );
     label->setFixedWidth( label->sizeHint().width() );
     hb->addWidget( label );
 
-    levelLCD = new QLCDNumber( 2, mainWin );
+    levelLCD = new QLCDNumber( 6, mainWin );
     levelLCD->setFrameStyle( QFrame::NoFrame );
     levelLCD->setSegmentStyle( QLCDNumber::Flat );
-    levelLCD->setFixedWidth( 70 );
+    levelLCD->setFixedWidth( 150 );
     levelLCD->setPalette( pal );
     hb->addWidget( levelLCD );
     hb->addStretch( 10 );
 
+    /*
     label = new QLabel( tr("Ships"), mainWin );
     label->setFont( labelFont );
     label->setFixedWidth( label->sizeHint().width() );
@@ -196,7 +199,7 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     shipsLCD->setFixedWidth( 40 );
     shipsLCD->setPalette( pal );
     hb->addWidget( shipsLCD );
-
+*/
     hb->addStrut( 30 );
 
     vb->addWidget( view, 10 );
@@ -208,7 +211,7 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     hbd->addSpacing( 10 );
 
     QString sprites_prefix = GameUIConstants::getBaseDir() + "/sprites/";
-
+/*
     QPixmap pm( sprites_prefix + "powerups/brake.png" );
     label = new QLabel( mainWin );
     label->setPixmap( pm );
@@ -273,7 +276,7 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     powerMeter->setPalette( pal );
     powerMeter->setFixedSize( 200, 12 );
     hbd->addWidget( powerMeter );
-
+*/
     shipsRemain = 3;
     showHiscores = FALSE;
 
@@ -285,7 +288,7 @@ KAstTopLevel::KAstTopLevel( QWidget *parent)
     actions.insert( Qt::Key_S, CharDown );
     actions.insert( Qt::Key_D, CharRight );
 
-    view->showText( tr( "Press N to start playing" ), Qt::yellow );
+    //view->showText( tr( "Press N to start playing" ), Qt::yellow );
 }
 
 KAstTopLevel::~KAstTopLevel()
@@ -302,6 +305,14 @@ void KAstTopLevel::slotProcessMovements(int direction) {
 
 void KAstTopLevel::slotProcessBomb() {
     emit bombLaid();
+}
+
+void KAstTopLevel::slotKillCount(int kills) {
+    scoreLCD->display( kills );
+}
+
+void KAstTopLevel::slotDeathCount(int deaths) {
+    levelLCD->display( deaths );
 }
 
 void KAstTopLevel::keyPressEvent( QKeyEvent *event )
@@ -420,10 +431,10 @@ void KAstTopLevel::slotNewGame()
 
     score = 0;
     shipsRemain = SB_SHIPS;
-    scoreLCD->display( 0 );
+    //scoreLCD->display( 0 );
     level = 0;
-    levelLCD->display( level+1 );
-    shipsLCD->display( shipsRemain-1 );
+    //levelLCD->display( 0 );
+    //shipsLCD->display( shipsRemain-1 );
 
     view->newGame();
     //view->newShip();
@@ -437,18 +448,18 @@ void KAstTopLevel::slotNewGame()
 void KAstTopLevel::slotShipKilled()
 {
     shipsRemain--;
-    shipsLCD->display( shipsRemain-1 );
+    //shipsLCD->display( shipsRemain-1 );
 
     playSound( "ShipDestroyed" );
 
     if ( shipsRemain )
     {
         waitShip = TRUE;
-        view->showText( tr( "Ship Destroyed. Press L to launch."), Qt::yellow );
+        //view->showText( tr( "Ship Destroyed. Press L to launch."), Qt::yellow );
     }
     else
     {
-        view->showText( tr("Game Over!"), Qt::red );
+        //view->showText( tr("Game Over!"), Qt::red );
         view->endGame();
 	doStats();
 //        highscore->addEntry( score, level, showHiscores );
@@ -505,7 +516,7 @@ void KAstTopLevel::doStats()
       .arg(r);
 */
 
-    view->showText( "Game Over.   Press N for a new game.", Qt::yellow, FALSE );
+    //view->showText( "Game Over.   Press N for a new game.", Qt::yellow, FALSE );
 }
 
 void KAstTopLevel::slotUpdateVitals()
