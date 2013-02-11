@@ -42,6 +42,9 @@ void QJsonSocket::readReady()
 {
     while(true)
     {
+        if (!m_socket)
+            return;
+
         quint64 dataLen = m_socket->bytesAvailable();
         if (toRead == 0)
         {
