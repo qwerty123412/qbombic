@@ -75,7 +75,7 @@
 
 #define TEXT_SPEED              4
 
-#define MOVEMENT_SPEED          2
+#define MOVEMENT_SPEED          8
 #define TILE_SIZE               48
 #define LEVEL_TILES_X           26
 #define LEVEL_TILES_Y           18
@@ -246,7 +246,8 @@ void KAsteroidsView::updatePlayer(QString name, int x, int y, int bombs, int kil
         Character* temp = new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), x*TILE_SIZE, y*TILE_SIZE);
         players.insert(name, temp);
     } else {
-        players[name]->setXY(x*TILE_SIZE, y*TILE_SIZE);
+        //players[name]->setXY(x*TILE_SIZE, y*TILE_SIZE);
+        players[name]->setTargetXY(x*TILE_SIZE, y*TILE_SIZE);
     }
 }
 
@@ -499,6 +500,14 @@ void KAsteroidsView::setPlayerCoordsXY(int x, int y) {
     //qDebug() << "player position " << x << " " << y;
 }
 
+void KAsteroidsView::addUndestroyable(int x, int y) {
+    if(m_level_data[LEVEL_TILES_X * y + x] == 0) {
+        AnimatedPixmapItem* temp = new AnimatedPixmapItem( animation[B_WALL], &field );
+        temp->setPos(x*TILE_SIZE, y*TILE_SIZE);
+        m_level_data[ LEVEL_TILES_X * y + x ] = 1;
+    }
+}
+
 void KAsteroidsView::addWall(int x, int y) {
     if(m_level_data[LEVEL_TILES_X * y + x] == 0) {
         Block* temp = new Block(new AnimatedPixmapItem( animation[B_CRATE], &field ), this);
@@ -638,6 +647,37 @@ void KAsteroidsView::delete_deactivated_powerups() {
 void KAsteroidsView::processChar()
 {
 
+    QMapIterator<QString, Character*> i(players);
+    while (i.hasNext()) {
+        i.next();
+        qDebug() << i.key();
+
+        Character* ch = i.value();
+
+        if( abs(ch->getTargetX() - ch->getX()) < MOVEMENT_SPEED ) {
+            ch->setXY(ch->getTargetX(), ch->getY());
+        } else {
+            if(ch->getTargetX() - ch->getX() > 0) {
+                ch->setXY(ch->getX() + MOVEMENT_SPEED, ch->getY());
+            } else {
+                ch->setXY(ch->getX() - MOVEMENT_SPEED, ch->getY());
+            }
+        }
+
+        if( abs(ch->getTargetY() - ch->getY()) < MOVEMENT_SPEED ) {
+            ch->setXY(ch->getX(), ch->getTargetY());
+        } else {
+            if(ch->getTargetY() - ch->getY() > 0) {
+                ch->setXY(ch->getX(), ch->getY() + MOVEMENT_SPEED);
+            } else {
+                ch->setXY(ch->getX(), ch->getY() - MOVEMENT_SPEED);
+            }
+        }
+
+    }
+
+    view.centerOn(players[m_player_name]->getCharacterSprite());
+
     if(mGoUp) {
         emit move(0);
     }
@@ -661,7 +701,10 @@ void KAsteroidsView::processChar()
 }
 
 void KAsteroidsView::center_on(QString name) {
-    view.centerOn(players[name]->getCharacterSprite());
+    if(m_player_name.isNull()) {
+        m_player_name = name;
+    }
+    //view.centerOn(players[name]->getCharacterSprite());
 }
 
 void KAsteroidsView::processDeaths() {
