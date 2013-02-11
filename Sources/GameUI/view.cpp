@@ -161,6 +161,10 @@ KAsteroidsView::KAsteroidsView( QWidget *parent)
     bombingEnabled = FALSE;
 
     bombingCooldown = 0;
+    upCool = 0;
+    downCool = 0;
+    leftCool = 0;
+    rightCool = 0;
 
     initialized = readSprites();
 
@@ -243,13 +247,16 @@ void KAsteroidsView::pause( bool p )
 
 // - - -
 
-void KAsteroidsView::updatePlayer(QString name, int x, int y, int bombs, int kills) {
+void KAsteroidsView::updatePlayer(QString name, int x, int y, int kills, int deaths) {
     if(!players.contains(name)) {
         Character* temp = new Character(new AnimatedPixmapItem( animation[B_PINGU], &field ), x*TILE_SIZE, y*TILE_SIZE);
         players.insert(name, temp);
-    } else {
-        //players[name]->setXY(x*TILE_SIZE, y*TILE_SIZE);
-        players[name]->setTargetXY(x*TILE_SIZE, y*TILE_SIZE);
+    } else {        
+        players[name]->setTargetXY(x*TILE_SIZE, y*TILE_SIZE)->setKills(kills)->setDeaths(deaths);
+        if(!m_player_name.isNull() && name == m_player_name) {
+            emit killCount(players[m_player_name]->getKills());
+            emit deathCount(players[m_player_name]->getDeaths());
+        }
     }
 }
 
@@ -312,6 +319,7 @@ bool KAsteroidsView::readSprites()
 
 void KAsteroidsView::showText( const QString &text, const QColor &color, bool scroll )
 {
+    /*
     if ( !initialized )
 	return;
     textSprite->setHtml( QString("<font color=#%1%2%3>%4</font>")
@@ -332,6 +340,7 @@ void KAsteroidsView::showText( const QString &text, const QColor &color, bool sc
 	textDy = 0;
     }
     textSprite->show();
+    */
 }
 
 Character* KAsteroidsView::create_character() {
@@ -398,6 +407,18 @@ void KAsteroidsView::timerEvent( QTimerEvent * )
 	if ( textSprite->sceneBoundingRect().y() > (field.height()-textSprite->boundingRect().height())/2 )
 	    textDy = 0;
     }    
+
+    if(upCool > 0)
+        upCool--;
+
+    if(downCool > 0)
+        downCool--;
+
+    if(leftCool > 0)
+        leftCool--;
+
+    if(rightCool > 0)
+        rightCool--;
 
     mFrameNum++;
 
@@ -601,6 +622,7 @@ void KAsteroidsView::delete_deactivated_explosions() {
     for(Explosion* explosion : m_explosions) {
         if(!explosion->is_activated()) {
             m_level_data[ explosion->get_quadrant(TILE_SIZE, LEVEL_TILES_X) ] = 0;
+            //explosion->getBomb()->setFrame(1);
             m_explosions.swap(0, m_explosions.indexOf(explosion));
             m_explosions.removeAt(0);
             delete explosion;
@@ -630,8 +652,7 @@ void KAsteroidsView::processChar()
 
     QMapIterator<QString, Character*> i(players);
     while (i.hasNext()) {
-        i.next();
-        qDebug() << i.key();
+        i.next();        
 
         Character* ch = i.value();
 
@@ -661,19 +682,25 @@ void KAsteroidsView::processChar()
         view.centerOn(players[m_player_name]->getCharacterSprite());
     }
 
-    if(mGoUp) {
+    int cooldown = 5;
+
+    if(mGoUp && !upCool) {
+        upCool = cooldown;
         emit move(0);
     }
 
-    if(mGoDown) {
+    if(mGoDown && !downCool) {
+        downCool = cooldown;
         emit move(2);
     }
 
-    if(mGoLeft) {
+    if(mGoLeft && !leftCool) {
+        leftCool = cooldown;
         emit move(3);
     }
 
-    if(mGoRight) {
+    if(mGoRight && !rightCool) {
+        rightCool = cooldown;
         emit move(1);
     }
 

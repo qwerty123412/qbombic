@@ -15,10 +15,15 @@ public:
     int getY() { return m_pos_y; }
     int getTargetX() { return m_target_x; }
     int getTargetY() { return m_target_y; }
+    int getKills() { return m_kills; }
+    int getDeaths() { return m_deaths; }
+
     AnimatedPixmapItem* getCharacterSprite();
 
     Character* setXY(int x, int y);
     Character* setTargetXY(int x, int y) { m_target_x = x; m_target_y = y; return this; }
+    Character* setKills(int kills) { m_kills = kills; return this; }
+    Character* setDeaths(int deaths) { m_deaths = deaths; return this; }
 
     int getUpperLeftQuadrant(int tile_size, int speed, int level_tiles_x);
     int getLowerLeftQuadrant(int tile_size, int speed, int level_tiles_x);
@@ -49,6 +54,7 @@ private:
     int m_pos_x, m_pos_y;
     int m_target_x, m_target_y;
     int m_max_bombs, m_bomb_count;
+    int m_kills, m_deaths;
     AnimatedPixmapItem* m_character_sprite;
     Bomb* m_last_bomb;
 };
