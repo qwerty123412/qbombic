@@ -37,7 +37,7 @@ public:
     {}
 
     QGameObject(QGameUndestroyable* undestroyable, const QCoordinations& coords) :
-        object(undestroyable), objType(), coords(coords)
+        object(undestroyable), objType(UNDESTROYABLE), coords(coords)
     {}
 
     ~QGameObject()

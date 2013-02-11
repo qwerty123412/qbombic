@@ -120,12 +120,18 @@ void QGame::start()
             continue;
 
         for (int i = 0; i < 5; ++i)
-            area.insert(QCoordinations(x + i, y, this), QGameObject(new QGameUndestroyable(), QCoordinations(x + 1, y, this)));
+        {
+            QCoordinations pos(x + i, y, this);
+            area.insert(pos, QGameObject(new QGameUndestroyable(), pos));
+        }
 
         for (int i = 0; i < 2; ++i)
         {
             for (int j = 0; j < 5; j+= 2)
-                area.insert(QCoordinations(x + j, y + (2 * (i + 1))), QGameObject(new QGameUndestroyable(), QCoordinations(x + j, y + (2 * (i + 1)))));
+            {
+                QCoordinations pos(x + j, y + (2 * (i + 1)), this);
+                area.insert(pos, QGameObject(new QGameUndestroyable(), pos));
+            }
         }
         last.X() = x;
         last.Y() = y;
@@ -325,6 +331,8 @@ void QGame::refreshGameWorld()
         default://avoid warning
             break;
         }
+        if (newCoords.X() >= SIZE_X || newCoords.Y() >= SIZE_Y)// avoid leaving game area
+            continue;
 
         if (players.contains(newCoords))
             continue;
@@ -361,7 +369,7 @@ void QGame::refreshGameWorld()
         while (true)
         {
             index(qrand() % size(), x, y);
-            if (!area.contains(QCoordinations(x, y)) && players.contains(QCoordinations(x, y)))
+            if (!area.contains(QCoordinations(x, y)) && !players.contains(QCoordinations(x, y)))
                 break;
         }
         area.insert(QCoordinations(x, y, this), QGameObject(new QGamePowerUp(), QCoordinations(x, y, this)));
