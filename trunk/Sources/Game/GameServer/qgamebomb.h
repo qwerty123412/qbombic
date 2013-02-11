@@ -16,9 +16,6 @@ public:
 
     bool explosion() { return !--ttl; }
 
-    // next bomb processing will explose
-    void fired() { ttl = 1; }
-
     QGameCharacter* getOwner() { return owner; }
 
 private:
