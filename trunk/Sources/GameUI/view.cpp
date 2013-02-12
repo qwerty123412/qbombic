@@ -180,6 +180,8 @@ KAsteroidsView::KAsteroidsView( QWidget *parent)
 
 KAsteroidsView::~KAsteroidsView()
 {    
+    qDeleteAll(m_blocks);
+    m_blocks.clear();
     /*
     qDeleteAll(rocks);     rocks.clear();
     qDeleteAll(missiles);  missiles.clear();

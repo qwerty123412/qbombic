@@ -21,5 +21,5 @@ int Block::get_quadrant(int tile_size, int level_tiles_x) {
 
 Block::~Block()
 {
-    delete m_block_sprite;
+    //delete m_block_sprite;
 }
