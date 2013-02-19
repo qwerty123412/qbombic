@@ -180,8 +180,10 @@ KAsteroidsView::KAsteroidsView( QWidget *parent)
 
 KAsteroidsView::~KAsteroidsView()
 {    
+    /*
     qDeleteAll(m_blocks);
     m_blocks.clear();
+    */
     /*
     qDeleteAll(rocks);     rocks.clear();
     qDeleteAll(missiles);  missiles.clear();
@@ -592,6 +594,7 @@ void KAsteroidsView::delete_deactivated_blocks() {
             m_level_data[ block->get_quadrant(TILE_SIZE, LEVEL_TILES_X) ] = 0;
             m_blocks.swap(0, m_blocks.indexOf(block));
             m_blocks.removeAt(0);
+            block->delete_sprite();
             delete block;
         }
     }
@@ -644,6 +647,7 @@ void KAsteroidsView::delete_deactivated_powerups() {
             m_level_data[ powerup->get_quadrant(TILE_SIZE, LEVEL_TILES_X) ] = 0;
             m_powerups.swap(0, m_powerups.indexOf(powerup));
             m_powerups.removeAt(0);
+            powerup->delete_sprite();
             delete powerup;
         }
     }

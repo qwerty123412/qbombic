@@ -19,6 +19,10 @@ int Block::get_quadrant(int tile_size, int level_tiles_x) {
             + level_tiles_x * floor((m_pos_y)/tile_size);
 }
 
+void Block::delete_sprite() {
+    m_block_sprite->setVisible(false);
+}
+
 Block::~Block()
 {
     //delete m_block_sprite;

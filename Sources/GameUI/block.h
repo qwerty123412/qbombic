@@ -21,6 +21,8 @@ public:
     void deactivate() { m_activated = false; }
     bool is_activated() { return m_activated; }
 
+    void delete_sprite();
+
     virtual ~Block();
 
 signals:

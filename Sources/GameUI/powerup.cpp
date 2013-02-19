@@ -19,7 +19,11 @@ int Powerup::get_quadrant(int tile_size, int level_tiles_x) {
             + level_tiles_x * floor((m_pos_y)/tile_size);
 }
 
+void Powerup::delete_sprite() {
+    m_powerup_sprite->setVisible(false);
+}
+
 Powerup::~Powerup()
 {
-    delete m_powerup_sprite;
+    //delete m_powerup_sprite;
 }
