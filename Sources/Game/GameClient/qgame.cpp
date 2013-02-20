@@ -31,7 +31,7 @@ void QGame::start()
     window.show();
 
     main->getComm()->registerNotification(Notifications::GAME_STATE, std::bind(&QGame::processState, this, _1));
-    connect(&window, SIGNAL(destroyed()), main, SLOT(leaveGame()));
+    //connect(&window, SIGNAL(destroyed()), main, SLOT(leaveGame()));
     connect(&window, SIGNAL(move(int)), this, SLOT(processMovements(int)));
     connect(&window, SIGNAL(bombLaid()), this, SLOT(bombLaid()));
 }
@@ -54,7 +54,7 @@ void QGame::processMovements(int direction)
 }
 
 void QGame::bombLaid() {
-    pushBomb();
+     main->getComm()->sendNotification(GameEvents::BOMB_LAID);
 }
 
 void QGame::moveDown()
@@ -75,11 +75,6 @@ void QGame::moveRight()
 void QGame::moveUp()
 {
     main->getComm()->sendNotification(GameEvents::MOVE_UP);
-}
-
-void QGame::pushBomb()
-{
-    main->getComm()->sendNotification(GameEvents::PUSH_BOMB);
 }
 
 void QGame::processState(const QVariant &data)

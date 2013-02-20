@@ -25,5 +25,4 @@ void Powerup::delete_sprite() {
 
 Powerup::~Powerup()
 {
-    //delete m_powerup_sprite;
 }

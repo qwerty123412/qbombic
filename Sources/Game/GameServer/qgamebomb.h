@@ -2,6 +2,7 @@
 #define QGAMEBOMB_H
 
 #include <qgamecharacter.h>
+#include "qgamesettings.h"
 
 class QGameBomb
 {
@@ -9,7 +10,7 @@ public:
 
     static const unsigned TTL = 2000;// time in ms
 
-    QGameBomb(QGameCharacter* owner, unsigned ttl = 20) :
+    QGameBomb(QGameCharacter* owner, unsigned ttl = time2frame<QGameBomb>()) :
         owner(owner), ttl(ttl)
     {
     }

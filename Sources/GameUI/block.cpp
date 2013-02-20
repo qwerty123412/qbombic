@@ -25,5 +25,4 @@ void Block::delete_sprite() {
 
 Block::~Block()
 {
-    //delete m_block_sprite;
 }

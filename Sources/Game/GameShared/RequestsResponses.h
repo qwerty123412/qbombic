@@ -39,7 +39,7 @@ struct Notifications
     static const QString QUIT_PLAYER;// server => clients - name of leaving client
     static const QString GAME_CLOSED;// server => clients - game room destroyed
     static const QString GAME_STARTED;// server => clients - game started
-    static const QString GAME_STOPPED;// server => clients - game stopped, game room still lives
+    static const QString GAME_STOPPED;// server => clients - game stopped, game room still lives; client (creator) -> server
     static const QString GAME_LIST;// server => clients - list of available game rooms
     static const QString MESSAGE;// client -> server => clients
     static const QString QUIT_GAME;// client -> server - I am leaving this game
@@ -52,7 +52,7 @@ struct GameEvents// client -> server
     static const QString MOVE_DOWN;
     static const QString MOVE_LEFT;
     static const QString MOVE_RIGHT;
-    static const QString PUSH_BOMB;
+    static const QString BOMB_LAID;
 };
 
 struct GameDataObjects// server -> client

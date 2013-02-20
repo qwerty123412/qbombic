@@ -33,6 +33,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     comm->sendNotification(Notifications::QUIT_GAME);
+    gameEnded();
 }
 
 void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
@@ -66,11 +67,7 @@ void MainWindow::setComm(std::shared_ptr<QJsonCommunication> value)
     comm->registerNotification(Notifications::GAME_STARTED, [this](const QVariant&)
     {
         this->ui->textBrowserChat->append("![Game started]");
-
-        gameObject = new QGame(this);
-        connect(gameObject, SIGNAL(ended()), SLOT(gameEnded()));
-        gameObject->start();
-        gameStarted = true;
+        gameStarted();
     });
     comm->registerNotification(Notifications::GAME_CLOSED, [this](const QVariant&)
     {
@@ -95,12 +92,21 @@ void MainWindow::gameEnded()
     delete gameObject;
     gameObject = nullptr;
     gameName = nullptr;
-    gameStarted = false;
+    gameIsRunning = false;
+}
+
+void MainWindow::gameStarted()
+{
+    gameObject = new QGame(this);
+    //connect(gameObject, SIGNAL(ended()), SLOT(gameEnded()));
+    gameObject->start();
+    gameIsRunning = true;
 }
 
 void MainWindow::onSocketError(QJsonCommunication&, QAbstractSocket::SocketError)
 {
     exitApp = false;
+    gameEnded();
     close();
 }
 
@@ -126,7 +132,7 @@ void MainWindow::exitClick()
 
 void MainWindow::startClick()
 {
-    if (gameStarted)
+    if (gameIsRunning)
     {
         this->ui->pushButtonStart->setText("Start");
         comm->sendNotification(Notifications::GAME_STOPPED);
@@ -191,7 +197,6 @@ void MainWindow::refreshPlayerList()
         model->sort(0);
     });
 }
-//void MainWin
 
 void MainWindow::createGame()
 {
@@ -251,7 +256,7 @@ void MainWindow::gameSelected(QModelIndex index)
     QStandardItemModel* model = static_cast<QStandardItemModel*>(this->ui->listViewGames->model());
     QStandardItem* row = model->item(index.row());
     QString name = extractQVariantItem(row->data(), "name");
-    comm->sendRequest(Request::JOIN_GAME, row->data(), [this,name](const QString& resp, const QVariant&)
+    comm->sendRequest(Request::JOIN_GAME, row->data(), [this,name](const QString& resp, const QVariant& started)
     {
         if (resp != Response::OK)
         {
@@ -263,5 +268,8 @@ void MainWindow::gameSelected(QModelIndex index)
         this->ui->pushButtonLeaveGame->setEnabled(true);
         this->ui->pushButtonNewGame->setEnabled(false);
         this->ui->listViewGames->setEnabled(false);
+
+        if (started.toBool())
+            gameStarted();
     });
 }

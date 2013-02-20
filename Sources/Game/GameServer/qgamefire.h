@@ -2,6 +2,7 @@
 #define QGAMEFIRE_H
 
 #include <qgamecharacter.h>
+#include "qgamesettings.h"
 
 class QGameFire
 {
@@ -9,7 +10,7 @@ public:
 
     static const unsigned TTL = 300;// time in ms
 
-    QGameFire(QGameCharacter* owner, unsigned ttl = 3) :
+    QGameFire(QGameCharacter* owner, unsigned ttl = time2frame<QGameFire>()) :
         owner(owner), ttl(ttl)
     {}
 

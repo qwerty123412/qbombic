@@ -31,6 +31,7 @@ public:
     void onGetGameList(std::shared_ptr<QJsonRequest> req);
 
     void onGameStart(std::shared_ptr<QJsonRequest> req);
+    void onGameStop(const QVariant&);
     void onGameCreate(std::shared_ptr<QJsonRequest> req);
     void onGameJoin(std::shared_ptr<QJsonRequest> req);
     void onGameLeave(const QVariant&);// just notification

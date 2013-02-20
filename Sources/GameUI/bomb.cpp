@@ -52,5 +52,6 @@ int Bomb::get_quadrant(int tile_size, int level_tiles_x) {
 
 Bomb::~Bomb()
 {
+    m_bomb->setVisible(false);
     //delete m_bomb;
 }
