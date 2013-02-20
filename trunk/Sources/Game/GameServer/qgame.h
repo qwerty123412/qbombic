@@ -46,6 +46,8 @@ public:
     void start();
     void stop();
 
+    bool getStarted() const { return started;  }
+
     void writeInfo(QGameInfo& info) const;
 
     void broadcastNotification(const QPlayer* except, const QString& notif, const QVariant& data = QVariant());

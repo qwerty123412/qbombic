@@ -40,6 +40,7 @@ public slots:
     void refreshPlayerList();
     void refreshGameList(const QString&, const QVariant& data);
     void gameEnded();
+    void gameStarted();
 
     void createGame();
     void leaveGame();
@@ -59,7 +60,7 @@ private:
     QString gameName;
     QString playerName;
     QGame* gameObject;
-    bool gameStarted;
+    bool gameIsRunning;
 };
 
 #endif // MAINWINDOW_H

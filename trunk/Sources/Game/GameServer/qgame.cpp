@@ -142,7 +142,7 @@ void QGame::start()
         --count;
     }
 
-    count = 5;
+/*    count = 5;
     while (count)
     {
         index(qrand() % size(), x, y);
@@ -151,8 +151,8 @@ void QGame::start()
         area.insert(QCoordinations(x, y, this), QGameObject(new QGamePowerUp(), QCoordinations(x, y, this)));
         --count;        
     }
-
-    count = size() / 10;
+*/
+    count = size() / 2;
     while (count)
     {
         index(qrand() % size(), x, y);
@@ -167,8 +167,10 @@ void QGame::start()
         insertPlayerIntoGame(player);
 
 
-    timer.start(100);
+    timer.start(tickDelay());
     broadcastNotification(nullptr, Notifications::GAME_STARTED);
+    started = true;
+    server->gameListChanged();
 }
 
 void QGame::stop()
@@ -181,6 +183,7 @@ void QGame::stop()
     characters.clear();
     lastEvent.clear();
     broadcastNotification(nullptr, Notifications::GAME_STOPPED);
+    server->gameListChanged();
 }
 
 void QGame::insertPlayerIntoGame(QPlayer *player)
@@ -242,7 +245,7 @@ void QGame::refreshGameWorld()
         QCoordinations center = object.getCoords();
 
         bomb->getOwner()->addBomb();
-        area.insert(center, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), center));
+        area.insert(center, QGameObject(new QGameFire(bomb->getOwner()), center));
 
         for (QPair<int, int> way : ways)
         {
@@ -261,7 +264,7 @@ void QGame::refreshGameWorld()
                 }
                 if (!area.contains(actual) || area[actual].type() == QGameObject::POWERUP)
                 {
-                    area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
+                    area.insert(actual, QGameObject(new QGameFire(bomb->getOwner()), actual));
                     continue;
                 }
                 QGameObject& current = area[actual];
@@ -274,7 +277,7 @@ void QGame::refreshGameWorld()
                     stop = true;
                     break;
                 case QGameObject::WALL:
-                    area.insert(actual, QGameObject(new QGameFire(bomb->getOwner(), time2frame<QGameFire>()), actual));
+                    area.insert(actual, QGameObject(new QGameFire(bomb->getOwner()), actual));
                     stop = true;
                     break;
                 }
@@ -309,7 +312,7 @@ void QGame::refreshGameWorld()
             continue;
         if (lastEvent[character->getPlayer()] == PlayerEvents::PUSH_BOMB)
         {
-            area.insert(character->getCoordinations(), QGameObject(new QGameBomb(character, time2frame<QGameBomb>()), character->getCoordinations()));
+            area.insert(character->getCoordinations(), QGameObject(new QGameBomb(character), character->getCoordinations()));
             continue;
         }
         QCoordinations newCoords(character->getCoordinations());
@@ -362,7 +365,7 @@ void QGame::refreshGameWorld()
         players[object.getCoords()]->addBomb();
         area.remove(object.getCoords());
     }
-    if (ticks >= 100)
+    if (ticks >= time2frame<QGamePowerUp>())
     {
         unsigned x, y;
         while (true)

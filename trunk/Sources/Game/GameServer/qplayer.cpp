@@ -12,6 +12,7 @@ QPlayer::QPlayer(QGameServer* server, QJsonCommunication *comm, const QString na
     comm->registerNotification(Notifications::MESSAGE, std::bind(&QPlayer::onMessage, this, _1));
     comm->registerNotification(Notifications::QUIT_GAME, std::bind(&QPlayer::onGameLeave, this, _1));
     comm->registerNotification(Notifications::GAME_STATE, std::bind(&QPlayer::onGameState, this, _1));
+    comm->registerNotification(Notifications::GAME_STOPPED, std::bind(&QPlayer::onGameStop, this, _1));
 
     comm->registerRequest(Request::GET_PLAYERS, std::bind(&QPlayer::onGetPlayerList, this, _1));
     comm->registerRequest(Request::CREATE_GAME, std::bind(&QPlayer::onGameCreate, this, _1));
@@ -24,7 +25,7 @@ QPlayer::QPlayer(QGameServer* server, QJsonCommunication *comm, const QString na
     comm->registerNotification(GameEvents::MOVE_LEFT, std::bind(&QPlayer::onMove<QGame::Directions>, this, _1, QGame::Directions::LEFT));
     comm->registerNotification(GameEvents::MOVE_RIGHT, std::bind(&QPlayer::onMove<QGame::Directions>, this, _1, QGame::Directions::RIGHT));
     comm->registerNotification(GameEvents::MOVE_UP, std::bind(&QPlayer::onMove<QGame::Directions>, this, _1, QGame::Directions::UP));
-    comm->registerNotification(GameEvents::PUSH_BOMB, std::bind(&QPlayer::onPushBomb, this, _1));
+    comm->registerNotification(GameEvents::BOMB_LAID, std::bind(&QPlayer::onPushBomb, this, _1));
 
 }
 
@@ -60,6 +61,14 @@ void QPlayer::onGameStart(std::shared_ptr<QJsonRequest> req)
     game->start();
 
     req->sendResponse(Response::OK);
+}
+
+void QPlayer::onGameStop(const QVariant &)
+{
+    if (game)
+    {
+        game->stop();
+    }
 }
 
 void QPlayer::onMessage(const QVariant &messageData)
@@ -103,7 +112,7 @@ void QPlayer::onGameJoin(std::shared_ptr<QJsonRequest> req)
         return;
     }
     game = g;
-    req->sendResponse(Response::OK);
+    req->sendResponse(Response::OK, QVariant(game->getStarted()));
     server->gameListChanged();
 }
 

@@ -25,7 +25,7 @@ const QString GameEvents::MOVE_DOWN = "M_DOWN";
 const QString GameEvents::MOVE_LEFT = "M_LEFT";
 const QString GameEvents::MOVE_RIGHT = "M_RIGHT";
 const QString GameEvents::MOVE_UP = "M_UP";
-const QString GameEvents::PUSH_BOMB = "PUSH_BOMB";
+const QString GameEvents::BOMB_LAID = "BOMB_LAID";
 
 const QString GameDataObjects::BOMB = "BOMB";
 const QString GameDataObjects::FIRE = "FIRE";

@@ -25,7 +25,6 @@ public:
     void moveLeft();
     void moveRight();
     void moveUp();
-    void pushBomb();
 
 
 signals:
